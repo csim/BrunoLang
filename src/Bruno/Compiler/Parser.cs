@@ -18,7 +18,6 @@ namespace Bruno.Compiler
 
         private readonly InputStream _input;
         private readonly ParserLexer _lexer;
-
         private readonly IDictionary<string, int> _precedence
             = new Dictionary<string, int>
               {
