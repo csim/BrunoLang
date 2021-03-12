@@ -60,8 +60,9 @@
         public BrunoFunc(string name, IEnumerable<BrunoExpression> arguments)
         {
             Name = name;
-            var args = arguments.TakeWhile(i => i != null)
-                                .ToArray();
+            var args = arguments
+                       .TakeWhile(i => i != null)
+                       .ToArray();
             Arguments = args;
             Children  = args;
         }
@@ -104,8 +105,9 @@
             // Some Power Apps functions accept optional arguments, such as Mid()
             // when an argument is null and located at the end of the array, it is ignored
             var argumentList = string.Join(", ",
-                                           Arguments.TakeWhile(a => a != null)
-                                                    .Select(a => a.ToString()));
+                                           Arguments
+                                               .TakeWhile(a => a != null)
+                                               .Select(a => a.ToString()));
 
             return $"{Name}({argumentList})";
         }
@@ -150,28 +152,11 @@
     }
 
     /// <summary>
-    ///     Power Apps integer
-    /// </summary>
-    internal class BrunoIntLiteral : BrunoExpression, IBrunoLiteral
-    {
-        public BrunoIntLiteral(int value)
-        {
-            Value    = value;
-            Children = new BrunoExpression[0];
-        }
-
-        public int Value { get; }
-
-        protected override string Serialize()
-            => Value.ToString();
-    }
-
-    /// <summary>
     ///     Power Apps double
     /// </summary>
-    internal class BrunoDoubleLiteral : BrunoExpression, IBrunoLiteral
+    internal class BrunoNumber : BrunoExpression, IBrunoLiteral
     {
-        public BrunoDoubleLiteral(double value)
+        public BrunoNumber(double value)
         {
             Value    = value;
             Children = new BrunoExpression[0];
@@ -300,9 +285,9 @@
     /// <summary>
     ///     Power Apps string
     /// </summary>
-    internal class BrunoStringLiteral : BrunoExpression, IBrunoLiteral
+    internal class BrunoString : BrunoExpression, IBrunoLiteral
     {
-        public BrunoStringLiteral(string value)
+        public BrunoString(string value)
         {
             Value    = value;
             Children = new BrunoExpression[0];

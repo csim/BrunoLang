@@ -34,7 +34,7 @@
 
         public static BrunoExpression Divide(BrunoExpression left, BrunoExpression right)
         {
-            if (right is BrunoIntLiteral { Value: 1 } || right is BrunoDoubleLiteral { Value: 1 }) return left;
+            if (right is BrunoNumber { Value: 1 }) return left;
 
             return new BrunoDivide(left, right);
         }
@@ -46,7 +46,7 @@
             => new BrunoDot(subject, accessor);
 
         public static BrunoExpression DoubleLiteral(double value)
-            => new BrunoDoubleLiteral(value);
+            => new BrunoNumber(value);
 
         public static string EscapeStringLiteral(string str)
             => str == null ? null : $"\"{str.Replace("\"", "\"\"")}\"";
@@ -72,9 +72,6 @@
 
         public static BrunoExpression FuncApp(string name, IEnumerable<BrunoExpression> arguments)
             => new BrunoFunc(name, arguments);
-
-        public static BrunoExpression IntLiteral(int value)
-            => new BrunoIntLiteral(value);
 
         public static BrunoExpression Last(BrunoExpression list)
             => new BrunoFunc(nameof(Last),
@@ -133,42 +130,34 @@
 
         public static BrunoExpression Minus(BrunoExpression left, BrunoExpression right)
         {
-            if (right is BrunoIntLiteral { Value: 0 } || right is BrunoDoubleLiteral { Value: 0 }) return left;
+            if (right is BrunoNumber { Value: 0 }) return left;
 
             return new BrunoMinus(left, right);
         }
 
         public static BrunoExpression Minus1(BrunoExpression val)
         {
-            if (val is BrunoIntLiteral intLiteral) return IntLiteral(intLiteral.Value - 1);
+            if (val is BrunoNumber doubleLiteral) return DoubleLiteral(doubleLiteral.Value - 1);
 
-            if (val is BrunoDoubleLiteral doubleLiteral) return DoubleLiteral(doubleLiteral.Value - 1);
-
-            if (val is BrunoPlus { Right: BrunoIntLiteral plusRight } plus)
-            {
-                var newRight = plusRight.Value - 1;
-                return newRight == 0 ? plus.Left : Plus(plus.Left, IntLiteral(newRight));
-            }
-
-            if (val is BrunoPlus { Right: BrunoDoubleLiteral plusRight2 } plus2)
+            if (val is BrunoPlus { Right: BrunoNumber plusRight2 } plus2)
             {
                 var newRight = plusRight2.Value - 1;
                 return newRight == 0 ? plus2.Left : Plus(plus2.Left, DoubleLiteral(newRight));
             }
 
-            if (val is BrunoMinus { Right: BrunoIntLiteral minusRight } minus) return Minus(minus.Left, IntLiteral(minusRight.Value + 1));
-
-            if (val is BrunoMinus { Right: BrunoDoubleLiteral minusRight2 } minus2)
+            if (val is BrunoMinus { Right: BrunoNumber minusRight2 } minus2)
+            {
                 return Minus(minus2.Left, DoubleLiteral(minusRight2.Value + 1));
+            }
 
-            return Minus(val, IntLiteral(1));
+            return Minus(val, DoubleLiteral(1));
         }
 
         public static BrunoExpression Multiply(BrunoExpression left, BrunoExpression right)
         {
-            if (right is BrunoIntLiteral { Value: 1 } || right is BrunoDoubleLiteral { Value: 1 }) return left;
+            if (right is BrunoNumber { Value: 1 }) return left;
 
-            if (left is BrunoIntLiteral { Value: 1 } || left is BrunoDoubleLiteral { Value: 1 }) return right;
+            if (left is BrunoNumber { Value: 1 }) return right;
 
 
             return new BrunoMultiply(left, right);
@@ -185,44 +174,30 @@
 
         public static BrunoExpression Plus(BrunoExpression left, BrunoExpression right)
         {
-            if (right is BrunoIntLiteral { Value: 0 } || right is BrunoDoubleLiteral { Value: 0 }) return left;
+            if (right is BrunoNumber { Value: 0 }) return left;
 
-            if (left is BrunoIntLiteral { Value: 0 } || right is BrunoDoubleLiteral { Value: 0 }) return right;
+            if (right is BrunoNumber { Value: 0 }) return right;
 
             return new BrunoPlus(left, right);
         }
 
         public static BrunoExpression Plus1(BrunoExpression val)
         {
-            if (val is BrunoIntLiteral intLiteral) return IntLiteral(intLiteral.Value + 1);
+            if (val is BrunoNumber doubleLiteral) return DoubleLiteral(doubleLiteral.Value + 1);
 
-            if (val is BrunoDoubleLiteral doubleLiteral) return DoubleLiteral(doubleLiteral.Value + 1);
-
-            if (val is BrunoPlus { Right: BrunoIntLiteral iPlus } plus)
+            if (val is BrunoPlus { Right: BrunoNumber iPlus1 } plus2)
             {
-                var newInt = iPlus.Value + 1;
-                return newInt == 0 ? plus.Left : Plus(plus.Left, IntLiteral(newInt));
-            }
-
-            if (val is BrunoPlus { Right: BrunoDoubleLiteral iPlus2 } plus2)
-            {
-                var newDouble = iPlus2.Value + 1;
+                var newDouble = iPlus1.Value + 1;
                 return newDouble == 0 ? plus2.Left : Plus(plus2.Left, DoubleLiteral(newDouble));
             }
 
-            if (val is BrunoMinus { Right: BrunoIntLiteral iMinus } minus)
+            if (val is BrunoMinus { Right: BrunoNumber iMinus1 } minus2)
             {
-                var newInt = iMinus.Value - 1;
-                return newInt == 0 ? minus.Left : Plus(minus.Left, IntLiteral(newInt));
-            }
-
-            if (val is BrunoMinus { Right: BrunoIntLiteral iMinus2 } minus2)
-            {
-                double newDouble = iMinus2.Value - 1;
+                double newDouble = iMinus1.Value - 1;
                 return newDouble == 0 ? minus2.Left : Plus(minus2.Left, DoubleLiteral(newDouble));
             }
 
-            return Plus(val, IntLiteral(1));
+            return Plus(val, DoubleLiteral(1));
         }
 
         public static BrunoExpression Proper(BrunoExpression str)
@@ -270,7 +245,7 @@
                              });
 
         public static BrunoExpression StringLiteral(string value)
-            => new BrunoStringLiteral(value);
+            => new BrunoString(value);
 
         public static BrunoExpression Text(BrunoExpression value, BrunoExpression format)
             => new BrunoFunc(nameof(Text),
