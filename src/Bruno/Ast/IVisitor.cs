@@ -41,12 +41,8 @@
                    BrunoString iexpr      => iexpr,
                    BrunoVariable iexpr    => iexpr,
                    BrunoNumber iexpr      => iexpr,
-                   BrunoFunc iexpr => FuncApp(iexpr.Name,
-                                              iexpr.Arguments
-                                                   .TakeWhile(a => a != null)
-                                                   .Select(a => a.Accept(visitor))
-                                                   .ToArray()),
-                   _ => throw new BrunoException($"Invalid BrunoExpression type ({expression.GetType().Name})")
+                   BrunoFunc iexpr        => FuncApp(iexpr.Name, iexpr.Arguments.Select(a => a.Accept(visitor)).ToArray()),
+                   _                      => throw new BrunoException($"Invalid BrunoExpression type ({expression.GetType().Name})")
                };
     }
 }
