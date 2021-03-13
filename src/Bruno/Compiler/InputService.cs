@@ -3,9 +3,9 @@
     using System;
     using System.Diagnostics.CodeAnalysis;
 
-    internal class InputStream
+    internal class InputService
     {
-        public InputStream([NotNull] string input)
+        public InputService([NotNull] string input)
         {
             if (string.IsNullOrEmpty(input)) throw new ArgumentException("Value cannot be null or empty.", nameof(input));
 

@@ -6,43 +6,42 @@ namespace Bruno.Compiler
     using Bruno.Ast;
     using static Ast.BrunoExpressionHelper;
 
-    internal class Parser
+    internal class ParsService
     {
-        private Parser([NotNull] string formula)
+        private ParsService([NotNull] string formula)
         {
             if (string.IsNullOrEmpty(formula)) throw new ArgumentException("Value cannot be null or empty.", nameof(formula));
 
-            _input = new InputStream(formula);
-            _lexer = new ParserLexer(_input);
+            _input = new InputService(formula);
+            _lexer = new LexService(_input);
         }
 
-        private readonly InputStream _input;
-        private readonly ParserLexer _lexer;
-        private readonly IDictionary<string, int> _precedence
-            = new Dictionary<string, int>
-              {
-                  { "=", 1 },
-                  { ".", 1 },
-                  { "||", 2 },
-                  { "&&", 3 },
-                  { "<", 7 },
-                  { ">", 7 },
-                  { "<=", 7 },
-                  { ">=", 7 },
-                  { "==", 7 },
-                  { "!=", 7 },
-                  { "+", 10 },
-                  { "-", 10 },
-                  { "*", 20 },
-                  { "/", 20 },
-                  { "%", 20 }
-              };
+        private readonly InputService _input;
+        private readonly LexService   _lexer;
+        private readonly IDictionary<string, int> _precedence = new Dictionary<string, int>
+                                                                {
+                                                                    { "=", 1 },
+                                                                    { ".", 1 },
+                                                                    { "||", 2 },
+                                                                    { "&&", 3 },
+                                                                    { "<", 7 },
+                                                                    { ">", 7 },
+                                                                    { "<=", 7 },
+                                                                    { ">=", 7 },
+                                                                    { "==", 7 },
+                                                                    { "!=", 7 },
+                                                                    { "+", 10 },
+                                                                    { "-", 10 },
+                                                                    { "*", 20 },
+                                                                    { "/", 20 },
+                                                                    { "%", 20 }
+                                                                };
 
         public BrunoExpression Parse()
             => ParseExpression();
 
         public static BrunoExpression Parse(string formula)
-            => new Parser(formula).Parse();
+            => new ParsService(formula).Parse();
 
         private bool IsNextIdentifier()
             => _lexer.Peek()?.Type == LexTokenType.Identifier;

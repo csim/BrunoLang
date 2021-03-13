@@ -6,9 +6,9 @@
     using System.Text;
     using System.Text.RegularExpressions;
 
-    internal class ParserLexer
+    internal class LexService
     {
-        public ParserLexer([NotNull] InputStream input)
+        public LexService([NotNull] InputService input)
         {
             _input = input ?? throw new ArgumentNullException(nameof(input));
         }
@@ -26,7 +26,7 @@
             '8',
             '9'
         };
-        private readonly InputStream _input;
+        private readonly InputService _input;
         private readonly char[] _operators
             =
             {
@@ -42,9 +42,7 @@
                 //'>',
                 //'!'
             };
-
         private LexToken _peekCache;
-
         private readonly char[] _punctuation =
         {
             '"',
@@ -55,7 +53,6 @@
             '{',
             '}'
         };
-
         private readonly char[] _whitespace =
         {
             ' ',
@@ -206,18 +203,8 @@
         }
     }
 
-    internal class LexToken
+    internal record LexToken(LexTokenType Type, object Value)
     {
-        public LexToken(LexTokenType type, object value)
-        {
-            Type  = type;
-            Value = value is char ? value.ToString() : value;
-        }
-
-        public LexTokenType Type { get; }
-
-        public object Value { get; }
-
         public override string ToString()
         {
             var val = Value is string ? $"\"{Value}\"" : Value.ToString();
