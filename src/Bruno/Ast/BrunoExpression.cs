@@ -52,9 +52,6 @@
         protected abstract string Serialize();
     }
 
-    /// <summary>
-    ///     Power Apps generic function
-    /// </summary>
     internal class BrunoFunc : BrunoExpression
     {
         public BrunoFunc(string name, IEnumerable<BrunoExpression> arguments)
@@ -102,8 +99,6 @@
         {
             if (Arguments == null || !Arguments.Any()) return $"{Name}()";
 
-            // Some Power Apps functions accept optional arguments, such as Mid()
-            // when an argument is null and located at the end of the array, it is ignored
             var argumentList = string.Join(", ",
                                            Arguments
                                                .TakeWhile(a => a != null)
@@ -113,9 +108,6 @@
         }
     }
 
-    /// <summary>
-    ///     Power Apps dot operator
-    /// </summary>
     internal class BrunoDot : BrunoExpression
     {
         public BrunoDot(BrunoExpression subject, BrunoExpression accessor)
@@ -133,10 +125,6 @@
             => $"{Subject}.{Accessor}";
     }
 
-    /// <summary>
-    ///     f
-    ///     Power Apps parenthesis grouping
-    /// </summary>
     internal class BrunoParenthesis : BrunoExpression
     {
         public BrunoParenthesis(BrunoExpression body)
@@ -151,9 +139,6 @@
             => $"({Body})";
     }
 
-    /// <summary>
-    ///     Power Apps double
-    /// </summary>
     internal class BrunoNumber : BrunoExpression, IBrunoLiteral
     {
         public BrunoNumber(double value)
@@ -168,9 +153,6 @@
             => Value.ToString(CultureInfo.InvariantCulture);
     }
 
-    /// <summary>
-    ///     Power Apps minus operator
-    /// </summary>
     internal class BrunoMinus : BrunoExpression, IBrunoOperator
     {
         public BrunoMinus(BrunoExpression left, BrunoExpression right)
@@ -198,9 +180,6 @@
             => $"{Left} - {Right}";
     }
 
-    /// <summary>
-    ///     Power Apps plus operator
-    /// </summary>
     internal class BrunoPlus : BrunoExpression, IBrunoOperator
     {
         public BrunoPlus(BrunoExpression left, BrunoExpression right)
@@ -282,9 +261,6 @@
             => $"{Left} / {Right}";
     }
 
-    /// <summary>
-    ///     Power Apps string
-    /// </summary>
     internal class BrunoString : BrunoExpression, IBrunoLiteral
     {
         public BrunoString(string value)
@@ -299,9 +275,6 @@
             => EscapeStringLiteral(Value);
     }
 
-    /// <summary>
-    ///     Power Apps variable
-    /// </summary>
     internal class BrunoVariable : BrunoExpression
     {
         public BrunoVariable(string name)
@@ -316,10 +289,6 @@
             => Name;
     }
 
-    /// <summary>
-    ///     Power Apps With2 construct.
-    ///     https://docs.microsoft.com/en-us/Brunos/maker/canvas-apps/functions/function-with
-    /// </summary>
     internal class BrunoWith : BrunoExpression
     {
         public BrunoWith(IReadOnlyDictionary<string, BrunoExpression> context, BrunoExpression body)
@@ -339,9 +308,6 @@
             => $"With({{ {string.Join(", ", Context.Select(item => $"{item.Key}: {item.Value}"))} }}, {Body})";
     }
 
-    /// <summary>
-    ///     Power Apps property accessor
-    /// </summary>
     internal class BrunoAccessor : BrunoExpression
     {
         public BrunoAccessor(string name)
