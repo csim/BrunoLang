@@ -289,25 +289,6 @@
             => Name;
     }
 
-    internal class BrunoWith : BrunoExpression
-    {
-        public BrunoWith(IReadOnlyDictionary<string, BrunoExpression> context, BrunoExpression body)
-        {
-            Context = context;
-            Body    = body;
-            var children = context.Values.ToList();
-            children.Add(body);
-            Children = children.ToArray();
-        }
-
-        public BrunoExpression Body { get; }
-
-        public IReadOnlyDictionary<string, BrunoExpression> Context { get; }
-
-        protected override string Serialize()
-            => $"With({{ {string.Join(", ", Context.Select(item => $"{item.Key}: {item.Value}"))} }}, {Body})";
-    }
-
     internal class BrunoAccessor : BrunoExpression
     {
         public BrunoAccessor(string name)
