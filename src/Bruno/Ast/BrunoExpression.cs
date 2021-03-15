@@ -23,7 +23,7 @@
     {
         private string _serialized;
 
-        public IEnumerable<BrunoExpression> Children { get; protected set; }
+        public IEnumerable<BrunoExpression> Children { get; protected init; }
 
         public bool Equals(BrunoExpression other)
             => other != null && ToString() == other.ToString();
@@ -76,23 +76,23 @@
         }
 
         public void Deconstruct(out string name,
-                                out BrunoExpression p0,
-                                out BrunoExpression p1)
+                                out BrunoExpression arg0,
+                                out BrunoExpression arg1)
         {
             name = Name;
-            p0   = Arguments.Any() ? Arguments.ElementAt(0) : null;
-            p1   = Arguments.Count() > 1 ? Arguments.ElementAt(1) : null;
+            arg0 = Arguments.Any() ? Arguments.ElementAt(0) : null;
+            arg1 = Arguments.Count() > 1 ? Arguments.ElementAt(1) : null;
         }
 
         public void Deconstruct(out string name,
-                                out BrunoExpression p0,
-                                out BrunoExpression p1,
-                                out BrunoExpression p2)
+                                out BrunoExpression arg0,
+                                out BrunoExpression arg1,
+                                out BrunoExpression arg2)
         {
             name = Name;
-            p0   = Arguments.Any() ? Arguments.ElementAt(0) : null;
-            p1   = Arguments.Count() > 1 ? Arguments.ElementAt(1) : null;
-            p2   = Arguments.Count() > 2 ? Arguments.ElementAt(2) : null;
+            arg0 = Arguments.Any() ? Arguments.ElementAt(0) : null;
+            arg1 = Arguments.Count() > 1 ? Arguments.ElementAt(1) : null;
+            arg2 = Arguments.Count() > 2 ? Arguments.ElementAt(2) : null;
         }
 
         protected override string Serialize()
