@@ -27,6 +27,7 @@
             {
                 var repl = new Repl();
                 repl.Run();
+                return;
             }
 
             var content = File.ReadAllText(@"C:\Source\BrunoLang\Samples\Example1.bruno");
