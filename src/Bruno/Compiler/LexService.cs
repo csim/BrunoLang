@@ -45,6 +45,7 @@
         private LexToken _peekCache;
         private readonly char[] _punctuation =
         {
+            '\n',
             '"',
             '.',
             ',',
@@ -56,7 +57,6 @@
         private readonly char[] _whitespace =
         {
             ' ',
-            '\n',
             '\r',
             '\t'
         };

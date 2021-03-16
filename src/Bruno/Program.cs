@@ -1,6 +1,7 @@
 ﻿namespace Bruno
 {
     using System;
+    using Bruno.Interpreter;
     using CommandLine;
 
     internal class Program
@@ -20,23 +21,29 @@
 
         private void Execute()
         {
-            if (_options.Verbose)
+            if (_options.Interactive)
             {
-                Console.WriteLine($"Verbose output enabled. Current Arguments: -v {_options.Verbose}");
-                Console.WriteLine("Quick Start Example! App is in Verbose mode!");
+                var repl = new Repl();
+                repl.Run();
             }
-            else
-            {
-                Console.WriteLine($"Current Arguments: -v {_options.Verbose}");
-                Console.WriteLine("Quick Start Example!");
-            }
+
+            //if (_options.Verbose)
+            //{
+            //    Console.WriteLine($"Verbose output enabled. Current Arguments: -v {_options.Verbose}");
+            //    Console.WriteLine("Quick Start Example! App is in Verbose mode!");
+            //}
+            //else
+            //{
+            //    Console.WriteLine($"Current Arguments: -v {_options.Verbose}");
+            //    Console.WriteLine("Quick Start Example!");
+            //}
         }
 
         // ReSharper disable once ClassNeverInstantiated.Local
         private class Options
         {
-            [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
-            public bool Verbose { get; set; }
+            [Option('i', "interactive", Required = false, HelpText = "Run interactive command prompt.")]
+            public bool Interactive { get; set; }
         }
     }
 }

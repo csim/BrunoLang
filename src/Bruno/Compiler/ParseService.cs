@@ -6,9 +6,9 @@ namespace Bruno.Compiler
     using Bruno.Ast;
     using static Ast.BrunoExpressionHelper;
 
-    internal class ParsService
+    internal class ParseService
     {
-        private ParsService([NotNull] string formula)
+        private ParseService([NotNull] string formula)
         {
             if (string.IsNullOrEmpty(formula)) throw new ArgumentException("Value cannot be null or empty.", nameof(formula));
 
@@ -17,7 +17,7 @@ namespace Bruno.Compiler
         }
 
         private readonly InputService _input;
-        private readonly LexService   _lexer;
+        private readonly LexService _lexer;
         private readonly IDictionary<string, int> _precedence = new Dictionary<string, int>
                                                                 {
                                                                     { "=", 1 },
@@ -41,7 +41,7 @@ namespace Bruno.Compiler
             => ParseExpression();
 
         public static BrunoExpression Parse(string formula)
-            => new ParsService(formula).Parse();
+            => new ParseService(formula).Parse();
 
         private bool IsNextIdentifier()
             => _lexer.Peek()?.Type == LexTokenType.Identifier;

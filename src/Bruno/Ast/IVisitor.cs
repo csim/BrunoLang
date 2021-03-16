@@ -36,7 +36,6 @@
                    BrunoMultiply iexpr    => Multiply(iexpr.Left.Accept(visitor), iexpr.Right.Accept(visitor)),
                    BrunoParenthesis iexpr => Parenthesis(iexpr.Body.Accept(visitor)),
                    BrunoPlus iexpr        => Plus(iexpr.Left.Accept(visitor), iexpr.Right.Accept(visitor)),
-                   BrunoWith iexpr        => With(iexpr.Context, iexpr.Body.Accept(visitor)),
                    BrunoAccessor iexpr    => iexpr,
                    BrunoString iexpr      => iexpr,
                    BrunoVariable iexpr    => iexpr,
