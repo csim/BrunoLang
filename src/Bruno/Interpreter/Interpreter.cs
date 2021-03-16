@@ -17,18 +17,20 @@
     ///     Bruno team that we can depend on.
     ///     However, whenever that becomes available, it should replace the code here.
     /// </summary>
-    internal class Interpreter : IVisitor<object>
+    public class Interpreter : IVisitor<object>
     {
-        public Interpreter()
+        private Interpreter()
         {
             _variableLookup = new Dictionary<string, object>();
         }
 
-        private readonly IReadOnlyDictionary<string, object> _variableLookup;
+        private readonly IDictionary<string, object> _variableLookup;
 
         public object Visit(BrunoExpression subject)
             => subject switch
                {
+                   BrunoProgram isubject     => VisitProgram(isubject),
+                   BrunoAssign isubject      => VisitAssign(isubject),
                    BrunoAccessor isubject    => VisitAccessor(isubject),
                    BrunoDivide isubject      => VisitDivide(isubject),
                    BrunoDot isubject         => VisitDot(isubject),
@@ -61,6 +63,9 @@
 
         private static object VisitAccessor(BrunoAccessor subject)
             => subject.Name;
+
+        private object VisitAssign(BrunoAssign assign)
+            => _variableLookup[((BrunoVariable)assign.Left).Name] = Accept(assign.Right);
 
         private object VisitConcatenate(BrunoFunc subject)
         {
@@ -165,6 +170,7 @@
                    nameof(BrunoExpressionHelper.RoundUp)       => VisitRoundUp(subject),
                    nameof(BrunoExpressionHelper.RoundDown)     => VisitRoundDown(subject),
                    nameof(BrunoExpressionHelper.DateTimeValue) => VisitDateTimeValue(subject),
+                   "print"                                     => VisitPrint(subject),
                    _                                           => throw new BrunoRuntimeException($"{subject.Name} not implemented.")
                };
 
@@ -301,6 +307,29 @@
 
         private object VisitPlus(BrunoPlus subject)
             => ChangeType<double>(Accept(subject.Left)) + ChangeType<double>(Accept(subject.Right));
+
+        private object VisitPrint(BrunoFunc subject)
+        {
+            if (subject.Arguments.Count() != 1)
+            {
+                throw new BrunoRuntimeException($"Invalid number of arguments ({subject.Arguments.Count()}) for {subject.Name}()");
+            }
+
+            var raw = Accept(subject.Arguments.ElementAt(0));
+
+            Console.WriteLine(raw);
+            return null;
+        }
+
+        private object VisitProgram(BrunoProgram program)
+        {
+            foreach (var statement in program.Statements)
+            {
+                statement.Accept(this);
+            }
+
+            return null;
+        }
 
         private object VisitProper(BrunoFunc subject)
         {

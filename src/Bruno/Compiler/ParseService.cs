@@ -6,7 +6,7 @@ namespace Bruno.Compiler
     using Bruno.Ast;
     using static Ast.BrunoExpressionHelper;
 
-    internal class ParseService
+    public class ParseService
     {
         private ParseService([NotNull] string formula)
         {
@@ -37,11 +37,8 @@ namespace Bruno.Compiler
                                                                     { "%", 20 }
                                                                 };
 
-        public BrunoExpression Parse()
-            => ParseExpression();
-
-        public static BrunoExpression Parse(string formula)
-            => new ParseService(formula).Parse();
+        public static BrunoProgram Parse(string raw)
+            => new ParseService(raw).ParseProgram();
 
         private bool IsNextIdentifier()
             => _lexer.Peek()?.Type == LexTokenType.Identifier;
@@ -65,6 +62,9 @@ namespace Bruno.Compiler
                    && token.Type             == LexTokenType.Punctuation
                    && token.Value.ToString() == ch.ToString();
         }
+
+        private BrunoExpression Parse()
+            => ParseExpression();
 
         private IEnumerable<BrunoExpression> ParseDelimited(char begin, char separator, char end)
         {
@@ -131,9 +131,8 @@ namespace Bruno.Compiler
                 var args = ParseDelimited('(', ',', ')');
                 return FuncApp(token.Value.ToString(), args);
             }
-
-
-            return Accessor(token.Value.ToString());
+            
+            return Variable(token.Value.ToString());
         }
 
         private BrunoExpression ParseLiteral()
@@ -164,12 +163,30 @@ namespace Bruno.Compiler
 
             return op switch
                    {
+                       "=" => Assign(left, right),
                        "+" => Plus(left, right),
                        "-" => Minus(left, right),
                        "*" => Multiply(left, right),
                        "/" => Divide(left, right),
                        _   => throw new Exception($"Unknown operator ({op})")
                    };
+        }
+
+        private BrunoProgram ParseProgram()
+        {
+            var statements = new List<BrunoExpression>();
+
+            while (!_lexer.IsEnd())
+            {
+                if (IsNextPunctuation(Constants.Linefeed))
+                {
+                    SkipPunctuation(Constants.Linefeed);
+                }
+
+                statements.Add(ParseExpression());
+            }
+
+            return new BrunoProgram(statements);
         }
 
         private void SkipPunctuation(char ch)

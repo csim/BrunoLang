@@ -13,53 +13,49 @@
             _input = input ?? throw new ArgumentNullException(nameof(input));
         }
 
-        private readonly char[] _digits =
-        {
-            '0',
-            '1',
-            '2',
-            '3',
-            '4',
-            '5',
-            '6',
-            '7',
-            '8',
-            '9'
-        };
+        private readonly char[] _digits = {
+                                              '0',
+                                              '1',
+                                              '2',
+                                              '3',
+                                              '4',
+                                              '5',
+                                              '6',
+                                              '7',
+                                              '8',
+                                              '9'
+                                          };
         private readonly InputService _input;
-        private readonly char[] _operators
-            =
-            {
-                '+',
-                '-',
-                '*',
-                '/'
-                //'%',
-                //'=',
-                //'&',
-                //'|',
-                //'<',
-                //'>',
-                //'!'
-            };
+        private readonly char[] _operators = {
+                                                 '=',
+                                                 '+',
+                                                 '-',
+                                                 '*',
+                                                 '/'
+                                                 //'%',
+                                                 //'=',
+                                                 //'&',
+                                                 //'|',
+                                                 //'<',
+                                                 //'>',
+                                                 //'!'
+                                             };
         private LexToken _peekCache;
-        private readonly char[] _punctuation =
-        {
-            '\n',
-            '"',
-            '.',
-            ',',
-            '(',
-            ')',
-            '{',
-            '}'
-        };
-        private readonly char[] _whitespace =
-        {
-            ' ',
-            '\r',
-            '\t'
-        };
+        private readonly char[] _punctuation = {
+                                                   '\n',
+                                                   '"',
+                                                   '.',
+                                                   ',',
+                                                   '(',
+                                                   ')',
+                                                   '{',
+                                                   '}'
+                                               };
+        private readonly char[] _whitespace = {
+                                                  ' ',
+                                                  '\r',
+                                                  '\t'
+                                              };
 
         public bool IsEnd()
             => Peek() == null;
@@ -151,18 +147,10 @@
         }
 
         private LexToken ReadOperator()
-        {
-            if (!IsNextOperator()) return null;
-
-            return new LexToken(LexTokenType.Operator, _input.Next().ToString());
-        }
+            => !IsNextOperator() ? null : new LexToken(LexTokenType.Operator, _input.Next().ToString());
 
         private LexToken ReadPunctuation()
-        {
-            if (!IsNextPunctuation()) return null;
-
-            return new LexToken(LexTokenType.Punctuation, _input.Next().ToString());
-        }
+            => !IsNextPunctuation() ? null : new LexToken(LexTokenType.Punctuation, _input.Next().ToString());
 
         private LexToken ReadString()
         {

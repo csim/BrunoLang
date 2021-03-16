@@ -6,7 +6,7 @@
     ///     Visitor that performs variable substitution on BrunoExpressions. Primary usage is to substitute
     ///     variable references with a literal value.
     /// </summary>
-    internal class SubstitutionVisitor : IVisitor<BrunoExpression>
+    public class SubstitutionVisitor : IVisitor<BrunoExpression>
     {
         private SubstitutionVisitor(BrunoExpression expression,
                                     IReadOnlyDictionary<BrunoExpression, BrunoExpression> substitutions)

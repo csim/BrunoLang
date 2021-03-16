@@ -2,7 +2,7 @@
 {
     using System;
 
-    internal class BrunoRuntimeException : Exception
+    public class BrunoRuntimeException : Exception
     {
         public BrunoRuntimeException(string message) : base(message)
         {

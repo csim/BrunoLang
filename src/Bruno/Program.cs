@@ -1,6 +1,8 @@
 ﻿namespace Bruno
 {
     using System;
+    using System.IO;
+    using Bruno.Compiler;
     using Bruno.Interpreter;
     using CommandLine;
 
@@ -26,6 +28,15 @@
                 var repl = new Repl();
                 repl.Run();
             }
+
+            var content = File.ReadAllText(@"C:\Source\BrunoLang\Samples\Example1.bruno");
+            //var content = "x = 1 + 2";
+            var program = ParseService.Parse(content);
+            //Console.WriteLine(content);
+            //Console.WriteLine("---");
+            //Console.WriteLine(program);
+            //Console.WriteLine("---");
+            Console.WriteLine(program.Evaluate()?.ToString());
 
             //if (_options.Verbose)
             //{

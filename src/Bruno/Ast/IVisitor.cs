@@ -8,17 +8,17 @@
     ///     Visitor pattern for BrunoExpressions
     /// </summary>
     /// <typeparam name="T">Aggregate acceptance type resulting from a visit.</typeparam>
-    internal interface IVisitor<out T>
+    public interface IVisitor<out T>
     {
         T Visit(BrunoExpression expr);
     }
 
-    internal interface IVisitor
+    public interface IVisitor
     {
         void Visit(BrunoExpression expr);
     }
 
-    internal static class VisitorExtensions
+    public static class VisitorExtensions
     {
         public static void AcceptChildren(this IVisitor visitor, BrunoExpression expression)
         {

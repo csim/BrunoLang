@@ -8,7 +8,7 @@
     /// <summary>
     ///     Visitor that extracts a list of expressions that match a given predicate.
     /// </summary>
-    internal class ExtractVisitor : IVisitor
+    public class ExtractVisitor : IVisitor
     {
         private ExtractVisitor([NotNull] BrunoExpression expression, [NotNull] Func<BrunoExpression, bool> extractAction)
         {
@@ -47,7 +47,7 @@
             => new ExtractVisitor(expression, predicate).Extract();
     }
 
-    internal class BrunoExtractResult
+    public class BrunoExtractResult
     {
         public BrunoExtractResult(BrunoExpression parent, int depth, [NotNull] BrunoExpression node)
         {

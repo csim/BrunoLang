@@ -4,9 +4,10 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Text;
     using static BrunoExpressionHelper;
 
-    internal interface IBrunoOperator
+    public interface IBrunoOperator
     {
         BrunoExpression Left { get; }
 
@@ -15,11 +16,11 @@
         BrunoExpression Right { get; }
     }
 
-    internal interface IBrunoLiteral
+    public interface IBrunoLiteral
     {
     }
 
-    internal abstract class BrunoExpression : IEquatable<BrunoExpression>
+    public abstract class BrunoExpression : IEquatable<BrunoExpression>
     {
         private string _serialized;
 
@@ -50,9 +51,35 @@
             => _serialized ??= Serialize();
 
         protected abstract string Serialize();
+
+        public object Evaluate()
+            => Interpreter.Interpreter.Evaluate(this);
     }
 
-    internal class BrunoFunc : BrunoExpression
+    public class BrunoProgram : BrunoExpression
+    {
+        public BrunoProgram(IEnumerable<BrunoExpression> statements)
+        {
+            Statements = statements;
+            Children   = statements;
+        }
+
+        public IEnumerable<BrunoExpression> Statements { get; }
+
+        protected override string Serialize()
+        {
+            var content = new StringBuilder();
+
+            foreach (var statement in Statements)
+            {
+                content.AppendLine(statement.ToString());
+            }
+
+            return content.ToString();
+        }
+    }
+
+    public class BrunoFunc : BrunoExpression
     {
         public BrunoFunc(string name, IEnumerable<BrunoExpression> arguments)
         {
@@ -108,7 +135,7 @@
         }
     }
 
-    internal class BrunoDot : BrunoExpression
+    public class BrunoDot : BrunoExpression
     {
         public BrunoDot(BrunoExpression subject, BrunoExpression accessor)
         {
@@ -125,7 +152,7 @@
             => $"{Subject}.{Accessor}";
     }
 
-    internal class BrunoParenthesis : BrunoExpression
+    public class BrunoParenthesis : BrunoExpression
     {
         public BrunoParenthesis(BrunoExpression body)
         {
@@ -139,7 +166,7 @@
             => $"({Body})";
     }
 
-    internal class BrunoNumber : BrunoExpression, IBrunoLiteral
+    public class BrunoNumber : BrunoExpression, IBrunoLiteral
     {
         public BrunoNumber(double value)
         {
@@ -153,7 +180,7 @@
             => Value.ToString(CultureInfo.InvariantCulture);
     }
 
-    internal class BrunoMinus : BrunoExpression, IBrunoOperator
+    public class BrunoMinus : BrunoExpression, IBrunoOperator
     {
         public BrunoMinus(BrunoExpression left, BrunoExpression right)
         {
@@ -180,7 +207,7 @@
             => $"{Left} - {Right}";
     }
 
-    internal class BrunoPlus : BrunoExpression, IBrunoOperator
+    public class BrunoPlus : BrunoExpression, IBrunoOperator
     {
         public BrunoPlus(BrunoExpression left, BrunoExpression right)
         {
@@ -207,7 +234,34 @@
             => $"{Left} + {Right}";
     }
 
-    internal class BrunoMultiply : BrunoExpression, IBrunoOperator
+    public class BrunoAssign : BrunoExpression, IBrunoOperator
+    {
+        public BrunoAssign(BrunoExpression left, BrunoExpression right)
+        {
+            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(left);
+
+            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(right);
+
+            Left  = left;
+            Right = right;
+            Children = new[]
+                       {
+                           left,
+                           right
+                       };
+        }
+
+        public BrunoExpression Left { get; }
+
+        public BrunoExpression Right { get; }
+
+        public int Precedence => 1;
+
+        protected override string Serialize()
+            => $"{Left} = {Right}";
+    }
+
+    public class BrunoMultiply : BrunoExpression, IBrunoOperator
     {
         public BrunoMultiply(BrunoExpression left, BrunoExpression right)
         {
@@ -234,7 +288,7 @@
             => $"{Left} * {Right}";
     }
 
-    internal class BrunoDivide : BrunoExpression, IBrunoOperator
+    public class BrunoDivide : BrunoExpression, IBrunoOperator
     {
         public BrunoDivide(BrunoExpression left, BrunoExpression right)
         {
@@ -261,7 +315,7 @@
             => $"{Left} / {Right}";
     }
 
-    internal class BrunoString : BrunoExpression, IBrunoLiteral
+    public class BrunoString : BrunoExpression, IBrunoLiteral
     {
         public BrunoString(string value)
         {
@@ -275,7 +329,7 @@
             => EscapeStringLiteral(Value);
     }
 
-    internal class BrunoVariable : BrunoExpression
+    public class BrunoVariable : BrunoExpression
     {
         public BrunoVariable(string name)
         {
@@ -289,7 +343,7 @@
             => Name;
     }
 
-    internal class BrunoAccessor : BrunoExpression
+    public class BrunoAccessor : BrunoExpression
     {
         public BrunoAccessor(string name)
         {

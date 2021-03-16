@@ -155,12 +155,16 @@
         public static BrunoExpression Parenthesis(BrunoExpression body)
             => new BrunoParenthesis(body);
 
+
         public static BrunoExpression Plus(BrunoExpression left, BrunoExpression right)
             => right is BrunoNumber { Value: 0 }
                    ? left
                    : left is BrunoNumber { Value: 0 }
                        ? right
                        : new BrunoPlus(left, right);
+
+        public static BrunoExpression Assign(BrunoExpression left, BrunoExpression right)
+            => new BrunoAssign(left, right);
 
         public static BrunoExpression Proper(BrunoExpression str)
             => new BrunoFunc(nameof(Proper),
