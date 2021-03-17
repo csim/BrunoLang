@@ -70,7 +70,7 @@
                             //var value = await runner.RunAsync(expr, parameters);
 
                             var ast    = ParseService.Parse(_command);
-                            var result = Interpreter.Evaluate(ast);
+                            var result = InterpreterService.Evaluate(ast);
 
                             PrintResult(result);
                             _command = null;

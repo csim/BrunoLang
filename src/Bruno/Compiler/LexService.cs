@@ -43,6 +43,8 @@
         private LexToken _peekCache;
         private readonly char[] _punctuation = {
                                                    '\n',
+                                                   ':',
+                                                   ';',
                                                    '"',
                                                    '.',
                                                    ',',

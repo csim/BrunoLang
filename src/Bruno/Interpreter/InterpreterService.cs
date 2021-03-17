@@ -7,6 +7,7 @@
     using System.Text.RegularExpressions;
     using Bruno.Ast;
     using Bruno.Exceptions;
+    using static Ast.BrunoExpressionHelper;
 
     /// <summary>
     ///     Visitor for evaluating a <see cref="BrunoExpression" />. This visitor mocks semantics for the subset
@@ -17,9 +18,9 @@
     ///     Bruno team that we can depend on.
     ///     However, whenever that becomes available, it should replace the code here.
     /// </summary>
-    public class Interpreter : IVisitor<object>
+    public class InterpreterService : IVisitor<object>
     {
-        private Interpreter()
+        private InterpreterService()
         {
             _variableLookup = new Dictionary<string, object>();
         }
@@ -46,7 +47,7 @@
                };
 
         public static object Evaluate(BrunoExpression expression)
-            => new Interpreter().Accept(expression);
+            => new InterpreterService().Accept(expression);
 
         private object Accept(BrunoExpression subject)
             => subject?.Accept(this);
@@ -147,31 +148,31 @@
         private object VisitFunc(BrunoFunc subject)
             => subject.Name switch
                {
-                   nameof(BrunoExpressionHelper.Concatenate)   => VisitConcatenate(subject),
-                   nameof(BrunoExpressionHelper.Left)          => VisitLeft(subject),
-                   nameof(BrunoExpressionHelper.Right)         => VisitRight(subject),
-                   nameof(BrunoExpressionHelper.Mid)           => VisitMid(subject),
-                   nameof(BrunoExpressionHelper.Len)           => VisitLen(subject),
-                   nameof(BrunoExpressionHelper.Proper)        => VisitProper(subject),
-                   nameof(BrunoExpressionHelper.Lower)         => VisitLower(subject),
-                   nameof(BrunoExpressionHelper.Upper)         => VisitUpper(subject),
-                   nameof(BrunoExpressionHelper.Match)         => VisitMatch(subject),
-                   nameof(BrunoExpressionHelper.MatchAll)      => VisitMatchAll(subject),
-                   nameof(BrunoExpressionHelper.Split)         => VisitSplit(subject),
-                   nameof(BrunoExpressionHelper.Find)          => VisitFind(subject),
-                   nameof(BrunoExpressionHelper.First)         => VisitFirst(subject),
-                   nameof(BrunoExpressionHelper.FirstN)        => VisitFirstN(subject),
-                   nameof(BrunoExpressionHelper.Last)          => VisitLast(subject),
-                   nameof(BrunoExpressionHelper.LastN)         => VisitLastN(subject),
-                   nameof(BrunoExpressionHelper.TrimEnds)      => VisitTrimEnds(subject),
-                   nameof(BrunoExpressionHelper.Text)          => VisitText(subject),
-                   nameof(BrunoExpressionHelper.Value)         => VisitValue(subject),
-                   nameof(BrunoExpressionHelper.Round)         => VisitRound(subject),
-                   nameof(BrunoExpressionHelper.RoundUp)       => VisitRoundUp(subject),
-                   nameof(BrunoExpressionHelper.RoundDown)     => VisitRoundDown(subject),
-                   nameof(BrunoExpressionHelper.DateTimeValue) => VisitDateTimeValue(subject),
-                   "print"                                     => VisitPrint(subject),
-                   _                                           => throw new BrunoRuntimeException($"{subject.Name} not implemented.")
+                   nameof(Concatenate)   => VisitConcatenate(subject),
+                   nameof(Left)          => VisitLeft(subject),
+                   nameof(Right)         => VisitRight(subject),
+                   nameof(Mid)           => VisitMid(subject),
+                   nameof(Len)           => VisitLen(subject),
+                   nameof(Proper)        => VisitProper(subject),
+                   nameof(Lower)         => VisitLower(subject),
+                   nameof(Upper)         => VisitUpper(subject),
+                   nameof(Match)         => VisitMatch(subject),
+                   nameof(MatchAll)      => VisitMatchAll(subject),
+                   nameof(Split)         => VisitSplit(subject),
+                   nameof(Find)          => VisitFind(subject),
+                   nameof(First)         => VisitFirst(subject),
+                   nameof(FirstN)        => VisitFirstN(subject),
+                   nameof(Last)          => VisitLast(subject),
+                   nameof(LastN)         => VisitLastN(subject),
+                   nameof(TrimEnds)      => VisitTrimEnds(subject),
+                   nameof(Text)          => VisitText(subject),
+                   nameof(Value)         => VisitValue(subject),
+                   nameof(Round)         => VisitRound(subject),
+                   nameof(RoundUp)       => VisitRoundUp(subject),
+                   nameof(RoundDown)     => VisitRoundDown(subject),
+                   nameof(DateTimeValue) => VisitDateTimeValue(subject),
+                   "print"               => VisitPrint(subject),
+                   _                     => throw new BrunoRuntimeException($"{subject.Name} not implemented.")
                };
 
         private object VisitLast(BrunoFunc subject)

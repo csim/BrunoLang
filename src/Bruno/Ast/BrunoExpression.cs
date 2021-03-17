@@ -5,6 +5,7 @@
     using System.Globalization;
     using System.Linq;
     using System.Text;
+    using Bruno.Interpreter;
     using static BrunoExpressionHelper;
 
     public interface IBrunoOperator
@@ -38,6 +39,9 @@
         public override bool Equals(object other)
             => Equals(other as BrunoExpression);
 
+        public object Evaluate()
+            => InterpreterService.Evaluate(this);
+
         public override int GetHashCode()
             => ToString().GetHashCode();
 
@@ -51,9 +55,6 @@
             => _serialized ??= Serialize();
 
         protected abstract string Serialize();
-
-        public object Evaluate()
-            => Interpreter.Interpreter.Evaluate(this);
     }
 
     public class BrunoProgram : BrunoExpression
