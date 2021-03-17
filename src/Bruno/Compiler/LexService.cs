@@ -13,6 +13,19 @@
             _input = input ?? throw new ArgumentNullException(nameof(input));
         }
 
+        private readonly char[] _keywords = {
+                                              '0',
+                                              '1',
+                                              '2',
+                                              '3',
+                                              '4',
+                                              '5',
+                                              '6',
+                                              '7',
+                                              '8',
+                                              '9'
+                                          };
+
         private readonly char[] _digits = {
                                               '0',
                                               '1',
@@ -26,20 +39,6 @@
                                               '9'
                                           };
         private readonly InputService _input;
-        private readonly char[] _operators = {
-                                                 '=',
-                                                 '+',
-                                                 '-',
-                                                 '*',
-                                                 '/'
-                                                 //'%',
-                                                 //'=',
-                                                 //'&',
-                                                 //'|',
-                                                 //'<',
-                                                 //'>',
-                                                 //'!'
-                                             };
         private LexToken _peekCache;
         private readonly char[] _punctuation = {
                                                    '\n',
@@ -94,8 +93,8 @@
         private bool IsNextPunctuation(char ch)
             => IsNextPunctuation() && _input.Peek() == ch;
 
-        private bool IsOperator(char ch)
-            => _operators.Contains(ch);
+        private static bool IsOperator(char ch)
+            => Constant.AllPunctuation.Contains(ch);
 
         private bool IsPunctuation(char ch)
             => _punctuation.Contains(ch);

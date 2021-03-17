@@ -63,9 +63,6 @@ namespace Bruno.Compiler
                    && token.Value.ToString() == ch.ToString();
         }
 
-        private BrunoExpression Parse()
-            => ParseExpression();
-
         private IEnumerable<BrunoExpression> ParseDelimited(char begin, char separator, char end)
         {
             var ret = new List<BrunoExpression>();
@@ -89,7 +86,7 @@ namespace Bruno.Compiler
 
         private BrunoExpression ParseDot(BrunoExpression left)
         {
-            if (!IsNextPunctuation('.')) return left;
+            if (!IsNextPunctuation(Constant.Period)) return left;
 
             var token = _lexer.Next();
 
@@ -178,9 +175,9 @@ namespace Bruno.Compiler
 
             while (!_lexer.IsEnd())
             {
-                if (IsNextPunctuation(Constants.Linefeed))
+                if (IsNextPunctuation(Constant.Linefeed))
                 {
-                    SkipPunctuation(Constants.Linefeed);
+                    SkipPunctuation(Constant.Linefeed);
                 }
 
                 statements.Add(ParseExpression());
