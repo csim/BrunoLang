@@ -8,7 +8,7 @@
     {
         public InputService([NotNull] string input)
         {
-            if (string.IsNullOrEmpty(value: input)) throw new ArgumentException("Value cannot be null or empty.", nameof(input));
+            if (string.IsNullOrEmpty(input)) throw new ArgumentException("Value cannot be null or empty.", nameof(input));
 
             _input = input.ToCharArray();
         }

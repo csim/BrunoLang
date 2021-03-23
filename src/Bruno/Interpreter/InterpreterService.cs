@@ -20,30 +20,30 @@
 
         public object Visit(BrunoExpression subject)
             => subject switch {
-                   BrunoProgram isubject     => VisitProgram(program: isubject),
-                   BrunoAssign isubject      => VisitAssign(assign: isubject),
-                   BrunoAccessor isubject    => VisitAccessor(subject: isubject),
-                   BrunoDivide isubject      => VisitDivide(subject: isubject),
-                   BrunoDot isubject         => VisitDot(subject: isubject),
-                   BrunoNumber isubject      => VisitNumber(subject: isubject),
-                   BrunoFunc isubject        => VisitFunc(subject: isubject),
-                   BrunoMinus isubject       => VisitMinus(subject: isubject),
-                   BrunoMultiply isubject    => VisitMultiply(subject: isubject),
-                   BrunoParenthesis isubject => VisitParenthesis(subject: isubject),
-                   BrunoPlus isubject        => VisitPlus(subject: isubject),
-                   BrunoString isubject      => VisitString(subject: isubject),
-                   BrunoVariable isubject    => VisitVariable(subject: isubject),
-                   var _                     => throw new ArgumentOutOfRangeException(nameof(subject))
+                   BrunoProgram isubject     => VisitProgram(isubject),
+                   BrunoAssign isubject      => VisitAssign(isubject),
+                   BrunoAccessor isubject    => VisitAccessor(isubject),
+                   BrunoDivide isubject      => VisitDivide(isubject),
+                   BrunoDot isubject         => VisitDot(isubject),
+                   BrunoNumber isubject      => VisitNumber(isubject),
+                   BrunoFunc isubject        => VisitFunc(isubject),
+                   BrunoMinus isubject       => VisitMinus(isubject),
+                   BrunoMultiply isubject    => VisitMultiply(isubject),
+                   BrunoParenthesis isubject => VisitParenthesis(isubject),
+                   BrunoPlus isubject        => VisitPlus(isubject),
+                   BrunoString isubject      => VisitString(isubject),
+                   BrunoVariable isubject    => VisitVariable(isubject),
+                   _                         => throw new ArgumentOutOfRangeException(nameof(subject))
                };
 
         public static object Evaluate(BrunoExpression expression)
-            => new InterpreterService().Accept(subject: expression);
+            => new InterpreterService().Accept(expression);
 
         private object Accept(BrunoExpression subject)
             => subject?.Accept(this);
 
         private static T ChangeType<T>(object value)
-            => (T)Convert.ChangeType(value: value, typeof(T));
+            => (T)Convert.ChangeType(value, typeof(T));
 
         private static Dictionary<string, object> ToDictionary(Match match)
             => new() {
@@ -55,7 +55,7 @@
             => subject.Name;
 
         private object VisitAssign(BrunoAssign assign)
-            => _variableLookup[key: ((BrunoVariable)assign.Left).Name] = Accept(subject: assign.Right);
+            => _variableLookup[((BrunoVariable)assign.Left).Name] = Accept(assign.Right);
 
         private object VisitConcatenate(BrunoFunc subject)
         {
@@ -66,29 +66,29 @@
 
             (string _, BrunoExpression leftExp, BrunoExpression rightExp) = subject;
 
-            return (string)Accept(subject: leftExp) + (string)Accept(subject: rightExp);
+            return (string)Accept(leftExp) + (string)Accept(rightExp);
         }
 
         private object VisitDateTimeValue(BrunoFunc subject)
         {
             (string _, BrunoExpression inputExp, BrunoExpression localeExp) = subject;
 
-            string inputVal = (string)Accept(subject: inputExp);
+            string inputVal = (string)Accept(inputExp);
             string localeVal = localeExp != null
-                                   ? (string)Accept(subject: localeExp)
+                                   ? (string)Accept(localeExp)
                                    : "en-us";
 
-            DateTimeFormatInfo formatProvider = new CultureInfo(name: localeVal).DateTimeFormat;
+            DateTimeFormatInfo formatProvider = new CultureInfo(localeVal).DateTimeFormat;
 
-            return DateTime.Parse(s: inputVal, provider: formatProvider);
+            return DateTime.Parse(inputVal, formatProvider);
         }
 
         private object VisitDivide(BrunoDivide subject)
-            => ChangeType<double>(ChangeType<double>(Accept(subject: subject.Left))) / ChangeType<double>(Accept(subject: subject.Right));
+            => ChangeType<double>(ChangeType<double>(Accept(subject.Left))) / ChangeType<double>(Accept(subject.Right));
 
         private object VisitDot(BrunoDot subject)
         {
-            Dictionary<string, object> leftVal = (Dictionary<string, object>)Accept(subject: subject.Subject);
+            Dictionary<string, object> leftVal = (Dictionary<string, object>)Accept(subject.Subject);
 
             return leftVal[subject.Accessor.ToString()];
         }
@@ -101,10 +101,10 @@
             }
 
             (string _, BrunoExpression inputExp, BrunoExpression findExp) = subject;
-            string inputVal = (string)Accept(subject: inputExp);
-            string findVal  = (string)Accept(subject: findExp);
+            string inputVal = (string)Accept(inputExp);
+            string findVal  = (string)Accept(findExp);
 
-            int index = findVal.IndexOf(value: inputVal, comparisonType: StringComparison.Ordinal);
+            int index = findVal.IndexOf(inputVal, StringComparison.Ordinal);
 
             return index != -1 ? index + 1 : (int?)null;
         }
@@ -128,39 +128,39 @@
             }
 
             (string _, BrunoExpression listExp, BrunoExpression countExp) = subject;
-            object[] listVal  = (object[])Accept(subject: listExp);
-            int      countVal = ChangeType<int>(Accept(subject: countExp));
+            object[] listVal  = (object[])Accept(listExp);
+            int      countVal = ChangeType<int>(Accept(countExp));
 
-            return listVal.Take(count: countVal).ToArray();
+            return listVal.Take(countVal).ToArray();
         }
 
         private object VisitFunc(BrunoFunc subject)
             => subject.Name switch {
-                   nameof(BrunoExpressionHelper.Concatenate)   => VisitConcatenate(subject: subject),
-                   nameof(BrunoExpressionHelper.Left)          => VisitLeft(subject: subject),
-                   nameof(BrunoExpressionHelper.Right)         => VisitRight(subject: subject),
-                   nameof(BrunoExpressionHelper.Mid)           => VisitMid(subject: subject),
-                   nameof(BrunoExpressionHelper.Len)           => VisitLen(subject: subject),
-                   nameof(BrunoExpressionHelper.Proper)        => VisitProper(subject: subject),
-                   nameof(BrunoExpressionHelper.Lower)         => VisitLower(subject: subject),
-                   nameof(BrunoExpressionHelper.Upper)         => VisitUpper(subject: subject),
-                   nameof(BrunoExpressionHelper.Match)         => VisitMatch(subject: subject),
-                   nameof(BrunoExpressionHelper.MatchAll)      => VisitMatchAll(subject: subject),
-                   nameof(BrunoExpressionHelper.Split)         => VisitSplit(subject: subject),
-                   nameof(BrunoExpressionHelper.Find)          => VisitFind(subject: subject),
-                   nameof(BrunoExpressionHelper.First)         => VisitFirst(subject: subject),
-                   nameof(BrunoExpressionHelper.FirstN)        => VisitFirstN(subject: subject),
-                   nameof(BrunoExpressionHelper.Last)          => VisitLast(subject: subject),
-                   nameof(BrunoExpressionHelper.LastN)         => VisitLastN(subject: subject),
-                   nameof(BrunoExpressionHelper.TrimEnds)      => VisitTrimEnds(subject: subject),
-                   nameof(BrunoExpressionHelper.Text)          => VisitText(subject: subject),
-                   nameof(BrunoExpressionHelper.Value)         => VisitValue(subject: subject),
-                   nameof(BrunoExpressionHelper.Round)         => VisitRound(subject: subject),
-                   nameof(BrunoExpressionHelper.RoundUp)       => VisitRoundUp(subject: subject),
-                   nameof(BrunoExpressionHelper.RoundDown)     => VisitRoundDown(subject: subject),
-                   nameof(BrunoExpressionHelper.DateTimeValue) => VisitDateTimeValue(subject: subject),
-                   "print"                                     => VisitPrint(subject: subject),
-                   var _                                       => throw new BrunoRuntimeException($"{subject.Name} not implemented.")
+                   nameof(BrunoExpressionHelper.Concatenate)   => VisitConcatenate(subject),
+                   nameof(BrunoExpressionHelper.Left)          => VisitLeft(subject),
+                   nameof(BrunoExpressionHelper.Right)         => VisitRight(subject),
+                   nameof(BrunoExpressionHelper.Mid)           => VisitMid(subject),
+                   nameof(BrunoExpressionHelper.Len)           => VisitLen(subject),
+                   nameof(BrunoExpressionHelper.Proper)        => VisitProper(subject),
+                   nameof(BrunoExpressionHelper.Lower)         => VisitLower(subject),
+                   nameof(BrunoExpressionHelper.Upper)         => VisitUpper(subject),
+                   nameof(BrunoExpressionHelper.Match)         => VisitMatch(subject),
+                   nameof(BrunoExpressionHelper.MatchAll)      => VisitMatchAll(subject),
+                   nameof(BrunoExpressionHelper.Split)         => VisitSplit(subject),
+                   nameof(BrunoExpressionHelper.Find)          => VisitFind(subject),
+                   nameof(BrunoExpressionHelper.First)         => VisitFirst(subject),
+                   nameof(BrunoExpressionHelper.FirstN)        => VisitFirstN(subject),
+                   nameof(BrunoExpressionHelper.Last)          => VisitLast(subject),
+                   nameof(BrunoExpressionHelper.LastN)         => VisitLastN(subject),
+                   nameof(BrunoExpressionHelper.TrimEnds)      => VisitTrimEnds(subject),
+                   nameof(BrunoExpressionHelper.Text)          => VisitText(subject),
+                   nameof(BrunoExpressionHelper.Value)         => VisitValue(subject),
+                   nameof(BrunoExpressionHelper.Round)         => VisitRound(subject),
+                   nameof(BrunoExpressionHelper.RoundUp)       => VisitRoundUp(subject),
+                   nameof(BrunoExpressionHelper.RoundDown)     => VisitRoundDown(subject),
+                   nameof(BrunoExpressionHelper.DateTimeValue) => VisitDateTimeValue(subject),
+                   "print"                                     => VisitPrint(subject),
+                   _                                           => throw new BrunoRuntimeException($"{subject.Name} not implemented.")
                };
 
         private object VisitLast(BrunoFunc subject)
@@ -182,10 +182,10 @@
             }
 
             (string _, BrunoExpression inputExp, BrunoExpression indexExp) = subject;
-            object[] inputVals = (object[])Accept(subject: inputExp);
-            int      indexVal  = ChangeType<int>(Accept(subject: indexExp));
+            object[] inputVals = (object[])Accept(inputExp);
+            int      indexVal  = ChangeType<int>(Accept(indexExp));
 
-            return inputVals.TakeLast(count: indexVal).ToArray();
+            return inputVals.TakeLast(indexVal).ToArray();
         }
 
         private object VisitLeft(BrunoFunc subject)
@@ -196,15 +196,15 @@
             }
 
             (string _, BrunoExpression inputExp, BrunoExpression lengthExp) = subject;
-            string inputVal  = (string)Accept(subject: inputExp);
-            int    lengthVal = ChangeType<int>(Accept(subject: lengthExp));
+            string inputVal  = (string)Accept(inputExp);
+            int    lengthVal = ChangeType<int>(Accept(lengthExp));
 
             if (lengthVal <= 0)
             {
                 throw new BrunoRuntimeException($"Invalid length parameter ({lengthVal}) for {subject.Name}()");
             }
 
-            return inputVal.Substring(0, length: lengthVal);
+            return inputVal.Substring(0, lengthVal);
         }
 
         private object VisitLen(BrunoFunc subject)
@@ -215,7 +215,7 @@
             }
 
             (string _, BrunoExpression inputExp) = subject;
-            string inputVal = (string)Accept(subject: inputExp);
+            string inputVal = (string)Accept(inputExp);
 
             return inputVal?.Length;
         }
@@ -238,11 +238,11 @@
             }
 
             (string _, BrunoExpression inputExp, BrunoExpression regexExp) = subject;
-            string inputVal = (string)Accept(subject: inputExp);
-            string regexVal = (string)Accept(subject: regexExp);
+            string inputVal = (string)Accept(inputExp);
+            string regexVal = (string)Accept(regexExp);
 
-            Match match = Regex.Match(input: inputVal, pattern: regexVal);
-            return match.Success ? ToDictionary(match: match) : null;
+            Match match = Regex.Match(inputVal, regexVal);
+            return match.Success ? ToDictionary(match) : null;
         }
 
         private object VisitMatchAll(BrunoFunc subject)
@@ -253,11 +253,11 @@
             }
 
             (string _, BrunoExpression inputExp, BrunoExpression regexExp) = subject;
-            string inputVal = (string)Accept(subject: inputExp);
-            string regexVal = (string)Accept(subject: regexExp);
+            string inputVal = (string)Accept(inputExp);
+            string regexVal = (string)Accept(regexExp);
 
-            MatchCollection matches = Regex.Matches(input: inputVal, pattern: regexVal);
-            return matches.Select(selector: ToDictionary).ToArray();
+            MatchCollection matches = Regex.Matches(inputVal, regexVal);
+            return matches.Select(ToDictionary).ToArray();
         }
 
         private object VisitMid(BrunoFunc subject)
@@ -268,9 +268,9 @@
             }
 
             (string _, BrunoExpression inputExp, BrunoExpression startIndexExp, BrunoExpression lengthExp) = subject;
-            string inputVal      = (string)Accept(subject: inputExp);
-            int    startIndexVal = ChangeType<int>(Accept(subject: startIndexExp));
-            int?   lengthVal     = lengthExp == null ? (int?)null : ChangeType<int>(Accept(subject: lengthExp));
+            string inputVal      = (string)Accept(inputExp);
+            int    startIndexVal = ChangeType<int>(Accept(startIndexExp));
+            int?   lengthVal     = lengthExp == null ? (int?)null : ChangeType<int>(Accept(lengthExp));
 
             if (startIndexVal < 1)
             {
@@ -278,24 +278,24 @@
             }
 
             return lengthVal.HasValue
-                       ? inputVal.Substring(startIndexVal - 1, length: lengthVal.Value)
+                       ? inputVal.Substring(startIndexVal - 1, lengthVal.Value)
                        : inputVal.Substring(startIndexVal - 1);
         }
 
         private object VisitMinus(BrunoMinus subject)
-            => ChangeType<double>(Accept(subject: subject.Left)) - ChangeType<double>(Accept(subject: subject.Right));
+            => ChangeType<double>(Accept(subject.Left)) - ChangeType<double>(Accept(subject.Right));
 
         private object VisitMultiply(BrunoMultiply subject)
-            => ChangeType<double>(ChangeType<double>(Accept(subject: subject.Left))) * ChangeType<double>(Accept(subject: subject.Right));
+            => ChangeType<double>(ChangeType<double>(Accept(subject.Left))) * ChangeType<double>(Accept(subject.Right));
 
         private static object VisitNumber(BrunoNumber subject)
             => subject.Value;
 
         private object VisitParenthesis(BrunoParenthesis subject)
-            => Accept(subject: subject.Body);
+            => Accept(subject.Body);
 
         private object VisitPlus(BrunoPlus subject)
-            => ChangeType<double>(Accept(subject: subject.Left)) + ChangeType<double>(Accept(subject: subject.Right));
+            => ChangeType<double>(Accept(subject.Left)) + ChangeType<double>(Accept(subject.Right));
 
         private object VisitPrint(BrunoFunc subject)
         {
@@ -306,7 +306,7 @@
 
             object raw = Accept(subject.Arguments.ElementAt(0));
 
-            Console.WriteLine(value: raw);
+            Console.WriteLine(raw);
             return null;
         }
 
@@ -341,8 +341,8 @@
             }
 
             (string _, BrunoExpression inputExp, BrunoExpression lengthExp) = subject;
-            string inputVal  = (string)Accept(subject: inputExp);
-            int    lengthVal = ChangeType<int>(Accept(subject: lengthExp));
+            string inputVal  = (string)Accept(inputExp);
+            int    lengthVal = ChangeType<int>(Accept(lengthExp));
 
             if (lengthVal <= 0) throw new BrunoRuntimeException($"Invalid length parameter ({lengthVal}) for {subject.Name}()");
 
@@ -353,29 +353,29 @@
         {
             (string _, BrunoExpression inputExp, BrunoExpression decimalsExp) = subject;
 
-            decimal inputVal    = Convert.ToDecimal(Accept(subject: inputExp));
-            int     decimalsVal = ChangeType<int>(Accept(subject: decimalsExp));
+            decimal inputVal    = Convert.ToDecimal(Accept(inputExp));
+            int     decimalsVal = ChangeType<int>(Accept(decimalsExp));
 
-            return Math.Round(d: inputVal, decimals: decimalsVal, mode: MidpointRounding.AwayFromZero);
+            return Math.Round(inputVal, decimalsVal, MidpointRounding.AwayFromZero);
         }
 
         private object VisitRoundDown(BrunoFunc subject)
         {
             (string _, BrunoExpression inputExp, BrunoExpression decimalsExp) = subject;
-            double inputVal    = Convert.ToDouble(Accept(subject: inputExp));
-            int    decimalsVal = ChangeType<int>(Accept(subject: decimalsExp));
+            double inputVal    = Convert.ToDouble(Accept(inputExp));
+            int    decimalsVal = ChangeType<int>(Accept(decimalsExp));
 
-            double multiplier = Math.Pow(10, Convert.ToDouble(value: decimalsVal));
+            double multiplier = Math.Pow(10, Convert.ToDouble(decimalsVal));
             return Math.Floor(inputVal * multiplier) / multiplier;
         }
 
         private object VisitRoundUp(BrunoFunc subject)
         {
             (string _, BrunoExpression inputExp, BrunoExpression decimalsExp) = subject;
-            double inputVal    = Convert.ToDouble(Accept(subject: inputExp));
-            int    decimalsVal = ChangeType<int>(Accept(subject: decimalsExp));
+            double inputVal    = Convert.ToDouble(Accept(inputExp));
+            int    decimalsVal = ChangeType<int>(Accept(decimalsExp));
 
-            double multiplier = Math.Pow(10, Convert.ToDouble(value: decimalsVal));
+            double multiplier = Math.Pow(10, Convert.ToDouble(decimalsVal));
             return Math.Ceiling(inputVal * multiplier) / multiplier;
         }
 
@@ -387,12 +387,12 @@
             }
 
             (string _, BrunoExpression inputExp, BrunoExpression delimiterExp) = subject;
-            string inputVal     = (string)Accept(subject: inputExp);
-            string delimiterVal = (string)Accept(subject: delimiterExp);
+            string inputVal     = (string)Accept(inputExp);
+            string delimiterVal = (string)Accept(delimiterExp);
 
             if (inputVal == null) throw new BrunoRuntimeException($"Input string cannot be null {subject.Name}()");
 
-            return inputVal.Split(new[] { delimiterVal }, options: StringSplitOptions.None);
+            return inputVal.Split(new[] { delimiterVal }, StringSplitOptions.None);
         }
 
         private static object VisitString(BrunoString subject)
@@ -401,26 +401,26 @@
         private object VisitText(BrunoFunc subject)
         {
             (string _, BrunoExpression inputExp, BrunoExpression formatExp) = subject;
-            object inputVal  = Accept(subject: inputExp);
-            string formatVal = (string)Accept(subject: formatExp);
+            object inputVal  = Accept(inputExp);
+            string formatVal = (string)Accept(formatExp);
 
             object VisitTextDate(DateTime dateTimeVal, string formatString)
             {
-                formatString = Regex.Replace(input: formatString,
+                formatString = Regex.Replace(formatString,
                                              @"(?<!\:|m)m*",
                                              match => match.Value.ToUpper());
 
                 formatString = formatString.Replace("AM/PM", "tt");
 
-                return dateTimeVal.ToString(format: formatString);
+                return dateTimeVal.ToString(formatString);
             }
 
             return inputVal switch {
-                       int int32Val       => int32Val.ToString(format: formatVal),
-                       double doubleVal   => doubleVal.ToString(format: formatVal),
-                       decimal decimalVal => decimalVal.ToString(format: formatVal),
-                       DateTime dateVal   => VisitTextDate(dateTimeVal: dateVal, formatString: formatVal),
-                       var _              => throw new BrunoRuntimeException($"Invalid Text() input: {inputVal} ({inputVal.GetType().Name})")
+                       int int32Val       => int32Val.ToString(formatVal),
+                       double doubleVal   => doubleVal.ToString(formatVal),
+                       decimal decimalVal => decimalVal.ToString(formatVal),
+                       DateTime dateVal   => VisitTextDate(dateVal, formatVal),
+                       _                  => throw new BrunoRuntimeException($"Invalid Text() input: {inputVal} ({inputVal.GetType().Name})")
                    };
         }
 
@@ -432,7 +432,7 @@
             }
 
             (string _, BrunoExpression inputExp) = subject;
-            string inputVal = (string)Accept(subject: inputExp);
+            string inputVal = (string)Accept(inputExp);
 
             return inputVal.Trim();
         }
@@ -455,15 +455,15 @@
             }
 
             (string _, BrunoExpression inputExp) = subject;
-            string             inputVal     = (string)Accept(subject: inputExp);
+            string             inputVal     = (string)Accept(inputExp);
             const NumberStyles numberStyles = NumberStyles.Any | NumberStyles.AllowExponent;
 
-            if (int.TryParse(s: inputVal, style: numberStyles, provider: CultureInfo.InvariantCulture, out int intVal))
+            if (int.TryParse(inputVal, numberStyles, CultureInfo.InvariantCulture, out int intVal))
             {
                 return intVal;
             }
 
-            if (decimal.TryParse(s: inputVal, style: numberStyles, provider: CultureInfo.InvariantCulture, out decimal decimalVal))
+            if (decimal.TryParse(inputVal, numberStyles, CultureInfo.InvariantCulture, out decimal decimalVal))
             {
                 return decimalVal;
             }
@@ -473,7 +473,7 @@
 
         private object VisitVariable(BrunoVariable subject)
         {
-            if (!_variableLookup.TryGetValue(key: subject.Name, out object value))
+            if (!_variableLookup.TryGetValue(subject.Name, out object value))
             {
                 throw new ApplicationException($"Variable not found ({subject.Name})");
             }

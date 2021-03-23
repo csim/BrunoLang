@@ -12,10 +12,10 @@ namespace Bruno.Compiler
     {
         private ParseService([NotNull] string formula)
         {
-            if (string.IsNullOrEmpty(value: formula)) throw new ArgumentException("Value cannot be null or empty.", nameof(formula));
+            if (string.IsNullOrEmpty(formula)) throw new ArgumentException("Value cannot be null or empty.", nameof(formula));
 
-            _input = new InputService(input: formula);
-            _lexer = new LexService(input: _input);
+            _input = new InputService(formula);
+            _lexer = new LexService(_input);
         }
 
         private readonly InputService _input;
@@ -39,7 +39,7 @@ namespace Bruno.Compiler
                                                                                             };
 
         public static BrunoProgram Parse(string raw)
-            => new ParseService(formula: raw).ParseProgram();
+            => new ParseService(raw).ParseProgram();
 
         private bool IsNextIdentifier()
             => _lexer.Peek()?.Type == LexTokenType.Identifier;
@@ -68,33 +68,33 @@ namespace Bruno.Compiler
         {
             List<BrunoExpression> ret = new();
 
-            SkipPunctuation(ch: begin);
+            SkipPunctuation(begin);
 
             while (!_lexer.IsEnd())
             {
-                if (IsNextPunctuation(ch: end)) break;
+                if (IsNextPunctuation(end)) break;
 
                 BrunoExpression argExp = ParseExpression();
-                ret.Add(item: argExp);
+                ret.Add(argExp);
 
-                if (IsNextPunctuation(ch: separator)) SkipPunctuation(ch: separator);
+                if (IsNextPunctuation(separator)) SkipPunctuation(separator);
             }
 
-            SkipPunctuation(ch: end);
+            SkipPunctuation(end);
 
             return ret;
         }
 
         private BrunoExpression ParseDot(BrunoExpression left)
         {
-            if (!IsNextPunctuation(ch: Period)) return left;
+            if (!IsNextPunctuation(Period)) return left;
 
             LexToken token = _lexer.Next();
 
             if (!IsNextIdentifier()) throw new Exception($"Unexpected token after dot: {token} {_input.Location}");
 
             BrunoExpression accessor = ParseExpression();
-            return Dot(subject: left, accessor: accessor);
+            return Dot(left, accessor);
         }
 
         private BrunoExpression ParseExpression()
@@ -103,17 +103,17 @@ namespace Bruno.Compiler
                                   ?? ParseGrouping()
                                   ?? ParseIdentifier()
                                   ?? throw new Exception($"Unexpected token: {_lexer.Peek()?.ToString() ?? "<null>"} {_input.Location}");
-            ret = ParseDot(left: ret);
-            return ParseOperator(left: ret);
+            ret = ParseDot(ret);
+            return ParseOperator(ret);
         }
 
         private BrunoExpression ParseGrouping()
         {
-            if (!IsNextPunctuation(ch: OpenParen)) return null;
+            if (!IsNextPunctuation(OpenParen)) return null;
 
             _lexer.Next();
             BrunoExpression ret = Parenthesis(ParseExpression());
-            SkipPunctuation(ch: CloseParen);
+            SkipPunctuation(CloseParen);
 
             return ret;
         }
@@ -124,10 +124,10 @@ namespace Bruno.Compiler
 
             LexToken token = _lexer.Next();
 
-            if (IsNextPunctuation(ch: OpenParen))
+            if (IsNextPunctuation(OpenParen))
             {
-                IEnumerable<BrunoExpression> args = ParseDelimited(begin: OpenParen, separator: Comma, end: CloseParen);
-                return FuncApp(token.Value.ToString(), arguments: args);
+                IEnumerable<BrunoExpression> args = ParseDelimited(OpenParen, Comma, CloseParen);
+                return FuncApp(token.Value.ToString(), args);
             }
 
             return Variable(token.Value.ToString());
@@ -142,7 +142,7 @@ namespace Bruno.Compiler
             return token.Type switch {
                        LexTokenType.StringLiteral => StringLiteral(token.Value.ToString()),
                        LexTokenType.DoubleLiteral => DoubleLiteral((double)token.Value),
-                       var _                      => throw new Exception($"Unexpected token: {token} {_input.Location}")
+                       _                          => throw new Exception($"Unexpected token: {token} {_input.Location}")
                    };
         }
 
@@ -160,12 +160,12 @@ namespace Bruno.Compiler
             BrunoExpression right = ParseExpression();
 
             return op switch {
-                       Operators.Equal        => Assign(left: left, right: right),
-                       Operators.Plus         => Plus(left: left, right: right),
-                       Operators.Minus        => Minus(left: left, right: right),
-                       Operators.Asterisk     => Multiply(left: left, right: right),
-                       Operators.ForwardSlash => Divide(left: left, right: right),
-                       var _                  => throw new Exception($"Unknown operator ({op})")
+                       Operators.Equal        => Assign(left, right),
+                       Operators.Plus         => Plus(left, right),
+                       Operators.Minus        => Minus(left, right),
+                       Operators.Asterisk     => Multiply(left, right),
+                       Operators.ForwardSlash => Divide(left, right),
+                       _                      => throw new Exception($"Unknown operator ({op})")
                    };
         }
 
@@ -175,20 +175,20 @@ namespace Bruno.Compiler
 
             while (!_lexer.IsEnd())
             {
-                if (IsNextPunctuation(ch: Linefeed))
+                if (IsNextPunctuation(Linefeed))
                 {
-                    SkipPunctuation(ch: Linefeed);
+                    SkipPunctuation(Linefeed);
                 }
 
                 statements.Add(ParseExpression());
             }
 
-            return new BrunoProgram(statements: statements);
+            return new BrunoProgram(statements);
         }
 
         private void SkipPunctuation(char ch)
         {
-            if (!IsNextPunctuation(ch: ch)) throw new Exception($"Unexpected punctutation: {_lexer.Next()} {_input.Location}, expected ({ch})");
+            if (!IsNextPunctuation(ch)) throw new Exception($"Unexpected punctutation: {_lexer.Next()} {_input.Location}, expected ({ch})");
 
             _lexer.Next();
         }

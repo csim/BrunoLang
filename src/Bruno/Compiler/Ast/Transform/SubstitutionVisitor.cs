@@ -19,9 +19,9 @@
         private readonly IReadOnlyDictionary<BrunoExpression, BrunoExpression> _substitutions;
 
         public BrunoExpression Visit(BrunoExpression expr)
-            => _substitutions.TryGetValue(key: expr, out BrunoExpression result)
+            => _substitutions.TryGetValue(expr, out BrunoExpression result)
                    ? result
-                   : this.AcceptChildrenClone(expression: expr);
+                   : this.AcceptChildrenClone(expr);
 
         /// <summary>
         ///     Perform variable substitutions on the given BrunoExpression.
@@ -32,6 +32,6 @@
 
         public static BrunoExpression Substitute(BrunoExpression expression,
                                                  IReadOnlyDictionary<BrunoExpression, BrunoExpression> substitutions)
-            => new SubstitutionVisitor(expression: expression, substitutions: substitutions).Substitute();
+            => new SubstitutionVisitor(expression, substitutions).Substitute();
     }
 }

@@ -4,7 +4,7 @@
 
     public class BrunoRuntimeException : Exception
     {
-        public BrunoRuntimeException(string message) : base(message: message)
+        public BrunoRuntimeException(string message) : base(message)
         {
         }
     }

@@ -30,12 +30,12 @@
         {
             if (_consoleEnabled)
             {
-                Console.WriteLine(value: text);
+                Console.WriteLine(text);
             }
 
             if (_txtEnabled)
             {
-                WriteTextFile(text: text);
+                WriteTextFile(text);
             }
         }
 
@@ -46,25 +46,25 @@
         {
             if (_txtWriter == null)
             {
-                string basePath = Path.Combine(Path.GetDirectoryName(path: GetType().Assembly.Location) ?? ".", "output");
+                string basePath = Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location) ?? ".", "output");
 
-                if (!Directory.Exists(path: basePath))
+                if (!Directory.Exists(basePath))
                 {
-                    Directory.CreateDirectory(path: basePath);
+                    Directory.CreateDirectory(basePath);
                 }
 
-                string baseFilename = Path.Combine(path1: basePath, $"{GetType().Namespace}-{DateTime.Now:yyyyMMdd_HHmmss}");
+                string baseFilename = Path.Combine(basePath, $"{GetType().Namespace}-{DateTime.Now:yyyyMMdd_HHmmss}");
 
                 string txtFilename = $"{baseFilename}.txt";
 
                 if (_txtEnabled)
                 {
-                    _txtWriter = new StreamWriter(path: txtFilename, false);
+                    _txtWriter = new StreamWriter(txtFilename, false);
                     WriteLine($"Writing: {txtFilename}");
                 }
             }
 
-            _txtWriter?.WriteLine(value: text);
+            _txtWriter?.WriteLine(text);
             Flush();
         }
     }

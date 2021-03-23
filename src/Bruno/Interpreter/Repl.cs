@@ -35,7 +35,7 @@
                             throw new ApplicationException("Context is empty.");
                         }
 
-                        if (string.IsNullOrEmpty(value: _command))
+                        if (string.IsNullOrEmpty(_command))
                         {
                             _command = "context";
                         }
@@ -68,20 +68,20 @@
                             //var expr = new FormulaWithParameters(_command, schema);
                             //var value = await runner.RunAsync(expr, parameters);
 
-                            BrunoProgram ast    = ParseService.Parse(raw: _command);
-                            object       result = InterpreterService.Evaluate(expression: ast);
+                            BrunoProgram ast    = ParseService.Parse(_command);
+                            object       result = InterpreterService.Evaluate(ast);
 
-                            PrintResult(value: result);
+                            PrintResult(result);
                             _command = null;
                         }
                         catch (BrunoRuntimeException error)
                         {
-                            PrintException(ex: error);
+                            PrintException(error);
                         }
                     }
                     catch (Exception ex)
                     {
-                        PrintException(ex: ex);
+                        PrintException(ex);
                     }
                 }
             }
@@ -102,13 +102,13 @@
         {
             _output.WriteLine("");
             _output.WriteLine("Exception:");
-            _output.WriteLine(target: ex);
+            _output.WriteLine(ex);
         }
 
         private void PrintResult(object value)
         {
             PrintContext();
-            string json = JsonConvert.SerializeObject(value: value);
+            string json = JsonConvert.SerializeObject(value);
             _output.WriteLine("Result:");
             _output.WriteLine($"{json} <{value?.GetType().FullName}>");
             _output.WriteLine("");

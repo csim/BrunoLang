@@ -35,7 +35,7 @@
             => _peekCache ??= ReadNext();
 
         private static bool IsDigit(char ch)
-            => Digits.All.Contains(value: ch);
+            => Digits.All.Contains(ch);
 
         private static bool IsIdentifier(char ch)
             => Regex.IsMatch(ch.ToString(), @"[A-Za-z_0123456789]");
@@ -56,41 +56,40 @@
             => IsNextPunctuation() && _input.Peek() == ch;
 
         private static bool IsOperator(char ch)
-            => Operators.All.Contains(value: ch);
+            => Operators.All.Contains(ch);
 
         private static bool IsPunctuation(char ch)
-            => All.Contains(value: ch);
+            => All.Contains(ch);
 
         private static bool IsWhitespace(char ch)
-            => WhiteSpace.All.Contains(value: ch);
+            => WhiteSpace.All.Contains(ch);
 
         private LexToken ReadDouble()
         {
             if (!IsNextDigit()) return null;
 
             bool hasDot = false;
-            string number = ReadWhile(ch =>
-                                      {
-                                          if (ch != Period) return IsDigit(ch: ch);
+            string number = ReadWhile(ch => {
+                                          if (ch != Period) return IsDigit(ch);
                                           if (hasDot) return false;
 
                                           return hasDot = true;
                                       });
 
-            return new LexToken(Type: LexTokenType.DoubleLiteral, double.Parse(s: number));
+            return new LexToken(LexTokenType.DoubleLiteral, double.Parse(number));
         }
 
         private LexToken ReadIdentifier()
         {
             if (!IsNextIdentifierStart()) return null;
 
-            string id = ReadWhile(condition: IsIdentifier);
-            return new LexToken(Type: LexTokenType.Identifier, Value: id);
+            string id = ReadWhile(IsIdentifier);
+            return new LexToken(LexTokenType.Identifier, id);
         }
 
         private LexToken ReadNext()
         {
-            ReadWhile(condition: IsWhitespace);
+            ReadWhile(IsWhitespace);
 
             if (_input.IsEnd()) return null;
 
@@ -105,14 +104,14 @@
         }
 
         private LexToken ReadOperator()
-            => !IsNextOperator() ? null : new LexToken(Type: LexTokenType.Operator, _input.Next().ToString());
+            => !IsNextOperator() ? null : new LexToken(LexTokenType.Operator, _input.Next().ToString());
 
         private LexToken ReadPunctuation()
-            => !IsNextPunctuation() ? null : new LexToken(Type: LexTokenType.Punctuation, _input.Next().ToString());
+            => !IsNextPunctuation() ? null : new LexToken(LexTokenType.Punctuation, _input.Next().ToString());
 
         private LexToken ReadString()
         {
-            if (!IsNextPunctuation(ch: DoubleQuote)) return null;
+            if (!IsNextPunctuation(DoubleQuote)) return null;
 
             StringBuilder ret = new();
             char          end = DoubleQuote;
@@ -125,10 +124,10 @@
 
                 if (ch == end && ch != Backslash) break;
 
-                ret.Append(value: ch);
+                ret.Append(ch);
             }
 
-            return new LexToken(Type: LexTokenType.StringLiteral, ret.ToString());
+            return new LexToken(LexTokenType.StringLiteral, ret.ToString());
         }
 
         private string ReadWhile(Func<char, bool> condition)

@@ -47,7 +47,7 @@
             => ToString().GetHashCode();
 
         public static bool operator ==(BrunoExpression left, BrunoExpression right)
-            => ReferenceEquals(objA: left, null) && ReferenceEquals(objA: right, null) || left?.Equals(other: right) == true;
+            => ReferenceEquals(left, null) && ReferenceEquals(right, null) || left?.Equals(right) == true;
 
         public static bool operator !=(BrunoExpression left, BrunoExpression right)
             => !(left == right);
@@ -179,16 +179,16 @@
         public double Value { get; }
 
         protected override string Serialize()
-            => Value.ToString(provider: CultureInfo.InvariantCulture);
+            => Value.ToString(CultureInfo.InvariantCulture);
     }
 
     public class BrunoMinus : BrunoExpression, IBrunoOperator
     {
         public BrunoMinus(BrunoExpression left, BrunoExpression right)
         {
-            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(body: left);
+            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(left);
 
-            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(body: right);
+            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(right);
 
             Left  = left;
             Right = right;
@@ -212,9 +212,9 @@
     {
         public BrunoPlus(BrunoExpression left, BrunoExpression right)
         {
-            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(body: left);
+            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(left);
 
-            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(body: right);
+            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(right);
 
             Left  = left;
             Right = right;
@@ -238,9 +238,9 @@
     {
         public BrunoAssign(BrunoExpression left, BrunoExpression right)
         {
-            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(body: left);
+            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(left);
 
-            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(body: right);
+            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(right);
 
             Left  = left;
             Right = right;
@@ -264,9 +264,9 @@
     {
         public BrunoMultiply(BrunoExpression left, BrunoExpression right)
         {
-            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(body: left);
+            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(left);
 
-            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(body: right);
+            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(right);
 
             Left  = left;
             Right = right;
@@ -290,9 +290,9 @@
     {
         public BrunoDivide(BrunoExpression left, BrunoExpression right)
         {
-            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(body: left);
+            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(left);
 
-            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(body: right);
+            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(right);
 
             Left  = left;
             Right = right;
@@ -323,7 +323,7 @@
         public string Value { get; }
 
         protected override string Serialize()
-            => EscapeStringLiteral(str: Value);
+            => EscapeStringLiteral(Value);
     }
 
     public class BrunoVariable : BrunoExpression

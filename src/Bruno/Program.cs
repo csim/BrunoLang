@@ -19,8 +19,8 @@
         public static void Main(string[] args)
             => Parser
                .Default
-               .ParseArguments<Options>(args: args)
-               .WithParsed(options => new Program(options: options).Execute());
+               .ParseArguments<Options>(args)
+               .WithParsed(options => new Program(options).Execute());
 
         private void Execute()
         {
@@ -33,7 +33,7 @@
 
             string content = File.ReadAllText(@"C:\Source\BrunoLang\Samples\Example1.bruno");
             //var content = "x = 1 + 2";
-            BrunoProgram program = ParseService.Parse(raw: content);
+            BrunoProgram program = ParseService.Parse(content);
             //Console.WriteLine(content);
             //Console.WriteLine("---");
             //Console.WriteLine(program);

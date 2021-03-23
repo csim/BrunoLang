@@ -6,10 +6,10 @@
     internal static class BrunoExpressionHelper
     {
         public static BrunoExpression Accessor(string name)
-            => new BrunoAccessor(name: name);
+            => new BrunoAccessor(name);
 
         public static BrunoExpression Assign(BrunoExpression left, BrunoExpression right)
-            => new BrunoAssign(left: left, right: right);
+            => new BrunoAssign(left, right);
 
         public static BrunoExpression Concatenate(BrunoExpression left, BrunoExpression right)
             => new BrunoFunc(nameof(Concatenate),
@@ -33,16 +33,16 @@
                                    });
 
         public static BrunoExpression Divide(BrunoExpression left, BrunoExpression right)
-            => right is BrunoNumber { Value: 1 } ? left : new BrunoDivide(left: left, right: right);
+            => right is BrunoNumber { Value: 1 } ? left : new BrunoDivide(left, right);
 
         public static BrunoExpression Dot(BrunoExpression subject, string accessor)
-            => new BrunoDot(subject: subject, Accessor(name: accessor));
+            => new BrunoDot(subject, Accessor(accessor));
 
         public static BrunoExpression Dot(BrunoExpression subject, BrunoExpression accessor)
-            => new BrunoDot(subject: subject, accessor: accessor);
+            => new BrunoDot(subject, accessor);
 
         public static BrunoExpression DoubleLiteral(double value)
-            => new BrunoNumber(value: value);
+            => new BrunoNumber(value);
 
         public static string EscapeStringLiteral(string str)
             => str == null ? null : $"\"{str.Replace("\"", "\"\"")}\"";
@@ -65,7 +65,7 @@
                                    });
 
         public static BrunoExpression FuncApp(string name, IEnumerable<BrunoExpression> arguments)
-            => new BrunoFunc(name: name, arguments: arguments);
+            => new BrunoFunc(name, arguments);
 
         public static BrunoExpression Last(BrunoExpression list)
             => new BrunoFunc(nameof(Last),
@@ -118,7 +118,7 @@
                                    });
 
         public static BrunoExpression Minus(BrunoExpression left, BrunoExpression right)
-            => right is BrunoNumber { Value: 0 } ? left : new BrunoMinus(left: left, right: right);
+            => right is BrunoNumber { Value: 0 } ? left : new BrunoMinus(left, right);
 
         public static BrunoExpression Minus1(BrunoExpression val)
         {
@@ -127,15 +127,15 @@
             if (val is BrunoPlus { Right: BrunoNumber plusRight2 } plus2)
             {
                 double newRight = plusRight2.Value - 1;
-                return newRight == 0 ? plus2.Left : Plus(left: plus2.Left, DoubleLiteral(value: newRight));
+                return newRight == 0 ? plus2.Left : Plus(plus2.Left, DoubleLiteral(newRight));
             }
 
             if (val is BrunoMinus { Right: BrunoNumber minusRight2 } minus2)
             {
-                return Minus(left: minus2.Left, DoubleLiteral(minusRight2.Value + 1));
+                return Minus(minus2.Left, DoubleLiteral(minusRight2.Value + 1));
             }
 
-            return Minus(left: val, DoubleLiteral(1));
+            return Minus(val, DoubleLiteral(1));
         }
 
         public static BrunoExpression Multiply(BrunoExpression left, BrunoExpression right)
@@ -143,17 +143,17 @@
                    ? left
                    : left is BrunoNumber { Value: 1 }
                        ? right
-                       : new BrunoMultiply(left: left, right: right);
+                       : new BrunoMultiply(left, right);
 
         public static BrunoExpression Parenthesis(BrunoExpression body)
-            => new BrunoParenthesis(body: body);
+            => new BrunoParenthesis(body);
 
         public static BrunoExpression Plus(BrunoExpression left, BrunoExpression right)
             => right is BrunoNumber { Value: 0 }
                    ? left
                    : left is BrunoNumber { Value: 0 }
                        ? right
-                       : new BrunoPlus(left: left, right: right);
+                       : new BrunoPlus(left, right);
 
         public static BrunoExpression Proper(BrunoExpression str)
             => new BrunoFunc(nameof(Proper),
@@ -195,7 +195,7 @@
                                    });
 
         public static BrunoExpression StringLiteral(string value)
-            => new BrunoString(value: value);
+            => new BrunoString(value);
 
         public static BrunoExpression Text(BrunoExpression value, BrunoExpression format)
             => new BrunoFunc(nameof(Text),
@@ -231,6 +231,6 @@
                              new[] { value });
 
         public static BrunoExpression Variable(string name)
-            => new BrunoVariable(name: name);
+            => new BrunoVariable(name);
     }
 }

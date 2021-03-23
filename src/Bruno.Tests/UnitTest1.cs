@@ -63,8 +63,8 @@ namespace Bruno.Tests
             //foreach (string formula in _baselineFormulas) {
             foreach (string content in contents)
             {
-                BrunoProgram program = ParseService.Parse(raw: content);
-                Assert.NotNull(@object: program);
+                BrunoProgram program = ParseService.Parse(content);
+                Assert.NotNull(program);
 
                 //object result = program.Evaluate();
 
@@ -105,6 +105,6 @@ namespace Bruno.Tests
         //}
 
         private void WriteLine(string content)
-            => _testOutputHelper.WriteLine(message: content);
+            => _testOutputHelper.WriteLine(content);
     }
 }
