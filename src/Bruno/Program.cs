@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using Bruno.Ast;
     using Bruno.Compiler;
     using Bruno.Interpreter;
     using CommandLine;
@@ -18,21 +19,21 @@
         public static void Main(string[] args)
             => Parser
                .Default
-               .ParseArguments<Options>(args)
-               .WithParsed(options => new Program(options).Execute());
+               .ParseArguments<Options>(args: args)
+               .WithParsed(options => new Program(options: options).Execute());
 
         private void Execute()
         {
             if (_options.Interactive)
             {
-                var repl = new Repl();
+                Repl repl = new();
                 repl.Run();
                 return;
             }
 
-            var content = File.ReadAllText(@"C:\Source\BrunoLang\Samples\Example1.bruno");
+            string content = File.ReadAllText(@"C:\Source\BrunoLang\Samples\Example1.bruno");
             //var content = "x = 1 + 2";
-            var program = ParseService.Parse(content);
+            BrunoProgram program = ParseService.Parse(raw: content);
             //Console.WriteLine(content);
             //Console.WriteLine("---");
             //Console.WriteLine(program);

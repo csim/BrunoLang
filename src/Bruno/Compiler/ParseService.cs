@@ -4,48 +4,49 @@ namespace Bruno.Compiler
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using Bruno.Ast;
+    using Bruno.Compiler.Constants;
     using static Ast.BrunoExpressionHelper;
+    using static Constants.Punctuation;
 
     public class ParseService
     {
         private ParseService([NotNull] string formula)
         {
-            if (string.IsNullOrEmpty(formula)) throw new ArgumentException("Value cannot be null or empty.", nameof(formula));
+            if (string.IsNullOrEmpty(value: formula)) throw new ArgumentException("Value cannot be null or empty.", nameof(formula));
 
-            _input = new InputService(formula);
-            _lexer = new LexService(_input);
+            _input = new InputService(input: formula);
+            _lexer = new LexService(input: _input);
         }
 
         private readonly InputService _input;
         private readonly LexService _lexer;
-        private readonly IDictionary<string, int> _precedence = new Dictionary<string, int>
-                                                                {
-                                                                    { "=", 1 },
-                                                                    { ".", 1 },
-                                                                    { "||", 2 },
-                                                                    { "&&", 3 },
-                                                                    { "<", 7 },
-                                                                    { ">", 7 },
-                                                                    { "<=", 7 },
-                                                                    { ">=", 7 },
-                                                                    { "==", 7 },
-                                                                    { "!=", 7 },
-                                                                    { "+", 10 },
-                                                                    { "-", 10 },
-                                                                    { "*", 20 },
-                                                                    { "/", 20 },
-                                                                    { "%", 20 }
-                                                                };
+        private readonly IDictionary<string, int> _precedence = new Dictionary<string, int> {
+                                                                                                { "=", 1 },
+                                                                                                { ".", 1 },
+                                                                                                { "||", 2 },
+                                                                                                { "&&", 3 },
+                                                                                                { "<", 7 },
+                                                                                                { ">", 7 },
+                                                                                                { "<=", 7 },
+                                                                                                { ">=", 7 },
+                                                                                                { "==", 7 },
+                                                                                                { "!=", 7 },
+                                                                                                { "+", 10 },
+                                                                                                { "-", 10 },
+                                                                                                { "*", 20 },
+                                                                                                { "/", 20 },
+                                                                                                { "%", 20 }
+                                                                                            };
 
         public static BrunoProgram Parse(string raw)
-            => new ParseService(raw).ParseProgram();
+            => new ParseService(formula: raw).ParseProgram();
 
         private bool IsNextIdentifier()
             => _lexer.Peek()?.Type == LexTokenType.Identifier;
 
         private bool IsNextLiteral()
         {
-            var token = _lexer.Peek();
+            LexToken token = _lexer.Peek();
 
             return token != null
                    && (token.Type == LexTokenType.StringLiteral || token.Type == LexTokenType.DoubleLiteral);
@@ -56,7 +57,7 @@ namespace Bruno.Compiler
 
         private bool IsNextPunctuation(char ch)
         {
-            var token = _lexer.Peek();
+            LexToken token = _lexer.Peek();
 
             return token                     != null
                    && token.Type             == LexTokenType.Punctuation
@@ -65,54 +66,54 @@ namespace Bruno.Compiler
 
         private IEnumerable<BrunoExpression> ParseDelimited(char begin, char separator, char end)
         {
-            var ret = new List<BrunoExpression>();
+            List<BrunoExpression> ret = new();
 
-            SkipPunctuation(begin);
+            SkipPunctuation(ch: begin);
 
             while (!_lexer.IsEnd())
             {
-                if (IsNextPunctuation(end)) break;
+                if (IsNextPunctuation(ch: end)) break;
 
-                var argExp = ParseExpression();
-                ret.Add(argExp);
+                BrunoExpression argExp = ParseExpression();
+                ret.Add(item: argExp);
 
-                if (IsNextPunctuation(separator)) SkipPunctuation(separator);
+                if (IsNextPunctuation(ch: separator)) SkipPunctuation(ch: separator);
             }
 
-            SkipPunctuation(end);
+            SkipPunctuation(ch: end);
 
             return ret;
         }
 
         private BrunoExpression ParseDot(BrunoExpression left)
         {
-            if (!IsNextPunctuation(Constant.Period)) return left;
+            if (!IsNextPunctuation(ch: Period)) return left;
 
-            var token = _lexer.Next();
+            LexToken token = _lexer.Next();
 
             if (!IsNextIdentifier()) throw new Exception($"Unexpected token after dot: {token} {_input.Location}");
 
-            var accessor = ParseExpression();
-            return Dot(left, accessor);
+            BrunoExpression accessor = ParseExpression();
+            return Dot(subject: left, accessor: accessor);
         }
 
         private BrunoExpression ParseExpression()
         {
-            var ret = ParseLiteral()
-                      ?? ParseGrouping()
-                      ?? ParseIdentifier()
-                      ?? throw new Exception($"Unexpected token: {_lexer.Peek()?.ToString() ?? "<null>"} {_input.Location}");
-            ret = ParseDot(ret);
-            return ParseOperator(ret);
+            BrunoExpression ret = ParseLiteral()
+                                  ?? ParseGrouping()
+                                  ?? ParseIdentifier()
+                                  ?? throw new Exception($"Unexpected token: {_lexer.Peek()?.ToString() ?? "<null>"} {_input.Location}");
+            ret = ParseDot(left: ret);
+            return ParseOperator(left: ret);
         }
 
         private BrunoExpression ParseGrouping()
         {
-            if (!IsNextPunctuation('(')) return null;
+            if (!IsNextPunctuation(ch: OpenParen)) return null;
 
             _lexer.Next();
-            var ret = Parenthesis(ParseExpression());
-            SkipPunctuation(')');
+            BrunoExpression ret = Parenthesis(ParseExpression());
+            SkipPunctuation(ch: CloseParen);
 
             return ret;
         }
@@ -121,14 +122,14 @@ namespace Bruno.Compiler
         {
             if (!IsNextIdentifier()) return null;
 
-            var token = _lexer.Next();
+            LexToken token = _lexer.Next();
 
-            if (IsNextPunctuation('('))
+            if (IsNextPunctuation(ch: OpenParen))
             {
-                var args = ParseDelimited('(', ',', ')');
-                return FuncApp(token.Value.ToString(), args);
+                IEnumerable<BrunoExpression> args = ParseDelimited(begin: OpenParen, separator: Comma, end: CloseParen);
+                return FuncApp(token.Value.ToString(), arguments: args);
             }
-            
+
             return Variable(token.Value.ToString());
         }
 
@@ -136,10 +137,9 @@ namespace Bruno.Compiler
         {
             if (!IsNextLiteral()) return null;
 
-            var token = _lexer.Next();
+            LexToken token = _lexer.Next();
 
-            return token.Type switch
-                   {
+            return token.Type switch {
                        LexTokenType.StringLiteral => StringLiteral(token.Value.ToString()),
                        LexTokenType.DoubleLiteral => DoubleLiteral((double)token.Value),
                        _                          => throw new Exception($"Unexpected token: {token} {_input.Location}")
@@ -150,45 +150,45 @@ namespace Bruno.Compiler
         {
             if (!IsNextOperator()) return left;
 
-            var op = _lexer.Next().Value.ToString();
+            char op = _lexer.Next().ValueAsChar();
+
             //var hisPrecedence = _precedence[op];
             //if (hisPrecedence <= myPrecedence) {
             //    return left;
             //}
 
-            var right = ParseExpression();
+            BrunoExpression right = ParseExpression();
 
-            return op switch
-                   {
-                       "=" => Assign(left, right),
-                       "+" => Plus(left, right),
-                       "-" => Minus(left, right),
-                       "*" => Multiply(left, right),
-                       "/" => Divide(left, right),
-                       _   => throw new Exception($"Unknown operator ({op})")
+            return op switch {
+                       Operators.Equal        => Assign(left: left, right: right),
+                       Operators.Plus         => Plus(left: left, right: right),
+                       Operators.Minus        => Minus(left: left, right: right),
+                       Operators.Asterisk     => Multiply(left: left, right: right),
+                       Operators.ForwardSlash => Divide(left: left, right: right),
+                       _                      => throw new Exception($"Unknown operator ({op})")
                    };
         }
 
         private BrunoProgram ParseProgram()
         {
-            var statements = new List<BrunoExpression>();
+            List<BrunoExpression> statements = new();
 
             while (!_lexer.IsEnd())
             {
-                if (IsNextPunctuation(Constant.Linefeed))
+                if (IsNextPunctuation(ch: Linefeed))
                 {
-                    SkipPunctuation(Constant.Linefeed);
+                    SkipPunctuation(ch: Linefeed);
                 }
 
                 statements.Add(ParseExpression());
             }
 
-            return new BrunoProgram(statements);
+            return new BrunoProgram(statements: statements);
         }
 
         private void SkipPunctuation(char ch)
         {
-            if (!IsNextPunctuation(ch)) throw new Exception($"Unexpected punctutation: {_lexer.Next()} {_input.Location}, expected ({ch})");
+            if (!IsNextPunctuation(ch: ch)) throw new Exception($"Unexpected punctutation: {_lexer.Next()} {_input.Location}, expected ({ch})");
 
             _lexer.Next();
         }

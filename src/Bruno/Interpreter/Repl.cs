@@ -1,24 +1,23 @@
 ﻿namespace Bruno.Interpreter
 {
     using System;
+    using Bruno.Ast;
     using Bruno.Compiler;
     using Bruno.Exceptions;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using PowerAppsRepl;
 
     public class Repl
     {
         private string _command;
         private JObject _context;
-        private static readonly string _newline = Environment.NewLine;
         private OutputService _output;
 
         public void Run()
         {
             Console.CancelKeyPress += CancelKeyPress;
 
-            using (_output = new OutputService(consoleEnabled: true, txtEnabled: true))
+            using (_output = new OutputService(true, true))
             {
                 _context = JObject.FromObject(new { input1 = "555-99-5656" });
                 PrintContext();
@@ -36,7 +35,7 @@
                             throw new ApplicationException("Context is empty.");
                         }
 
-                        if (string.IsNullOrEmpty(_command))
+                        if (string.IsNullOrEmpty(value: _command))
                         {
                             _command = "context";
                         }
@@ -69,20 +68,20 @@
                             //var expr = new FormulaWithParameters(_command, schema);
                             //var value = await runner.RunAsync(expr, parameters);
 
-                            var ast    = ParseService.Parse(_command);
-                            var result = InterpreterService.Evaluate(ast);
+                            BrunoProgram ast    = ParseService.Parse(raw: _command);
+                            object       result = InterpreterService.Evaluate(expression: ast);
 
-                            PrintResult(result);
+                            PrintResult(value: result);
                             _command = null;
                         }
                         catch (BrunoRuntimeException error)
                         {
-                            PrintException(error);
+                            PrintException(ex: error);
                         }
                     }
                     catch (Exception ex)
                     {
-                        PrintException(ex);
+                        PrintException(ex: ex);
                     }
                 }
             }
@@ -103,13 +102,13 @@
         {
             _output.WriteLine("");
             _output.WriteLine("Exception:");
-            _output.WriteLine(ex);
+            _output.WriteLine(target: ex);
         }
 
         private void PrintResult(object value)
         {
             PrintContext();
-            string json = JsonConvert.SerializeObject(value);
+            string json = JsonConvert.SerializeObject(value: value);
             _output.WriteLine("Result:");
             _output.WriteLine($"{json} <{value?.GetType().FullName}>");
             _output.WriteLine("");

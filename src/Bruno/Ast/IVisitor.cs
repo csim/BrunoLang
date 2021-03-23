@@ -24,23 +24,22 @@
         {
             if (expression.Children == null || !expression.Children.Any()) return;
 
-            foreach (var child in expression.Children) child.Accept(visitor);
+            foreach (BrunoExpression child in expression.Children) child.Accept(visitor: visitor);
         }
 
         public static BrunoExpression AcceptChildrenClone(this IVisitor<BrunoExpression> visitor, BrunoExpression expression)
-            => expression switch
-               {
-                   BrunoDivide iexpr      => Divide(iexpr.Left.Accept(visitor), iexpr.Right.Accept(visitor)),
-                   BrunoDot iexpr         => Dot(iexpr.Subject.Accept(visitor), iexpr.Accessor),
-                   BrunoMinus iexpr       => Minus(iexpr.Left.Accept(visitor), iexpr.Right.Accept(visitor)),
-                   BrunoMultiply iexpr    => Multiply(iexpr.Left.Accept(visitor), iexpr.Right.Accept(visitor)),
-                   BrunoParenthesis iexpr => Parenthesis(iexpr.Body.Accept(visitor)),
-                   BrunoPlus iexpr        => Plus(iexpr.Left.Accept(visitor), iexpr.Right.Accept(visitor)),
+            => expression switch {
+                   BrunoDivide iexpr      => Divide(iexpr.Left.Accept(visitor: visitor), iexpr.Right.Accept(visitor: visitor)),
+                   BrunoDot iexpr         => Dot(iexpr.Subject.Accept(visitor: visitor), accessor: iexpr.Accessor),
+                   BrunoMinus iexpr       => Minus(iexpr.Left.Accept(visitor: visitor), iexpr.Right.Accept(visitor: visitor)),
+                   BrunoMultiply iexpr    => Multiply(iexpr.Left.Accept(visitor: visitor), iexpr.Right.Accept(visitor: visitor)),
+                   BrunoParenthesis iexpr => Parenthesis(iexpr.Body.Accept(visitor: visitor)),
+                   BrunoPlus iexpr        => Plus(iexpr.Left.Accept(visitor: visitor), iexpr.Right.Accept(visitor: visitor)),
                    BrunoAccessor iexpr    => iexpr,
                    BrunoString iexpr      => iexpr,
                    BrunoVariable iexpr    => iexpr,
                    BrunoNumber iexpr      => iexpr,
-                   BrunoFunc iexpr        => FuncApp(iexpr.Name, iexpr.Arguments.Select(a => a.Accept(visitor)).ToArray()),
+                   BrunoFunc iexpr        => FuncApp(name: iexpr.Name, iexpr.Arguments.Select(a => a.Accept(visitor: visitor)).ToArray()),
                    _                      => throw new BrunoException($"Invalid BrunoExpression type ({expression.GetType().Name})")
                };
     }

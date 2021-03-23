@@ -2,12 +2,13 @@
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using static Constants.Punctuation;
 
     internal class InputService
     {
         public InputService([NotNull] string input)
         {
-            if (string.IsNullOrEmpty(input)) throw new ArgumentException("Value cannot be null or empty.", nameof(input));
+            if (string.IsNullOrEmpty(value: input)) throw new ArgumentException("Value cannot be null or empty.", nameof(input));
 
             _input = input.ToCharArray();
         }
@@ -26,9 +27,9 @@
 
         public char Next()
         {
-            var ret = _input[_position++];
+            char ret = _input[_position++];
 
-            if (ret == '\n')
+            if (ret == Linefeed)
             {
                 Line++;
                 Column = 1;

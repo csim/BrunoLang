@@ -24,13 +24,13 @@
 
         public void Visit(BrunoExpression node)
         {
-            if (_predicate(node)) _results.Add(new BrunoExtractResult(_parent, _depth, node));
+            if (_predicate(arg: node)) _results.Add(new BrunoExtractResult(parent: _parent, depth: _depth, node: node));
 
             if (node.Children == null || !node.Children.Any()) return;
 
             _parent = node;
             _depth++;
-            this.AcceptChildren(node);
+            this.AcceptChildren(expression: node);
             _depth--;
             _parent = null;
         }
@@ -44,7 +44,7 @@
 
         public static IEnumerable<BrunoExtractResult> Extract([NotNull] BrunoExpression expression,
                                                               [NotNull] Func<BrunoExpression, bool> predicate)
-            => new ExtractVisitor(expression, predicate).Extract();
+            => new ExtractVisitor(expression: expression, extractAction: predicate).Extract();
     }
 
     public class BrunoExtractResult

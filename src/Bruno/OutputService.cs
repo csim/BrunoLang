@@ -1,18 +1,22 @@
-﻿using System;
-using System.IO;
+﻿namespace Bruno
+{
+    using System;
+    using System.IO;
 
-namespace PowerAppsRepl {
-    public class OutputService : IDisposable {
-        public OutputService(bool consoleEnabled, bool txtEnabled) {
+    public class OutputService : IDisposable
+    {
+        public OutputService(bool consoleEnabled, bool txtEnabled)
+        {
             _consoleEnabled = consoleEnabled;
-            _txtEnabled = txtEnabled;
+            _txtEnabled     = txtEnabled;
         }
 
         private readonly bool _consoleEnabled;
         private readonly bool _txtEnabled;
         private StreamWriter _txtWriter;
 
-        public void Dispose() {
+        public void Dispose()
+        {
             Flush();
 
             _txtWriter?.Dispose();
@@ -22,44 +26,45 @@ namespace PowerAppsRepl {
         public void WriteLine(object target)
             => WriteLine(target.ToString());
 
-        public void WriteLine(string text) {
-            if (_consoleEnabled) {
-                Console.WriteLine(text);
+        public void WriteLine(string text)
+        {
+            if (_consoleEnabled)
+            {
+                Console.WriteLine(value: text);
             }
 
-            if (_txtEnabled) {
-                WriteTextFile(text);
+            if (_txtEnabled)
+            {
+                WriteTextFile(text: text);
             }
         }
 
         private void Flush()
             => _txtWriter?.Flush();
 
-        private void WriteTextFile(string text) {
-            if (_txtWriter == null) {
-                var basePath = Path.Combine(
-                    Path.GetDirectoryName(GetType().Assembly.Location) ?? ".",
-                    "output"
-                );
+        private void WriteTextFile(string text)
+        {
+            if (_txtWriter == null)
+            {
+                string basePath = Path.Combine(Path.GetDirectoryName(path: GetType().Assembly.Location) ?? ".", "output");
 
-                if (!Directory.Exists(basePath)) {
-                    Directory.CreateDirectory(basePath);
+                if (!Directory.Exists(path: basePath))
+                {
+                    Directory.CreateDirectory(path: basePath);
                 }
 
-                var baseFilename = Path.Combine(
-                    basePath,
-                    $"{GetType().Namespace}-{DateTime.Now:yyyyMMdd_HHmmss}"
-                );
+                string baseFilename = Path.Combine(path1: basePath, $"{GetType().Namespace}-{DateTime.Now:yyyyMMdd_HHmmss}");
 
-                var txtFilename = $"{baseFilename}.txt";
+                string txtFilename = $"{baseFilename}.txt";
 
-                if (_txtEnabled) {
-                    _txtWriter = new StreamWriter(txtFilename, false);
+                if (_txtEnabled)
+                {
+                    _txtWriter = new StreamWriter(path: txtFilename, false);
                     WriteLine($"Writing: {txtFilename}");
                 }
             }
 
-            _txtWriter?.WriteLine(text);
+            _txtWriter?.WriteLine(value: text);
             Flush();
         }
     }

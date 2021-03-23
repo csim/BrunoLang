@@ -46,7 +46,7 @@
             => ToString().GetHashCode();
 
         public static bool operator ==(BrunoExpression left, BrunoExpression right)
-            => ReferenceEquals(left, null) && ReferenceEquals(right, null) || left?.Equals(right) == true;
+            => ReferenceEquals(objA: left, null) && ReferenceEquals(objA: right, null) || left?.Equals(other: right) == true;
 
         public static bool operator !=(BrunoExpression left, BrunoExpression right)
             => !(left == right);
@@ -69,9 +69,9 @@
 
         protected override string Serialize()
         {
-            var content = new StringBuilder();
+            StringBuilder content = new();
 
-            foreach (var statement in Statements)
+            foreach (BrunoExpression statement in Statements)
             {
                 content.AppendLine(statement.ToString());
             }
@@ -85,9 +85,9 @@
         public BrunoFunc(string name, IEnumerable<BrunoExpression> arguments)
         {
             Name = name;
-            var args = arguments
-                       .TakeWhile(i => i != null)
-                       .ToArray();
+            BrunoExpression[] args = arguments
+                                     .TakeWhile(i => i != null)
+                                     .ToArray();
             Arguments = args;
             Children  = args;
         }
@@ -127,10 +127,10 @@
         {
             if (Arguments == null || !Arguments.Any()) return $"{Name}()";
 
-            var argumentList = string.Join(", ",
-                                           Arguments
-                                               .TakeWhile(a => a != null)
-                                               .Select(a => a.ToString()));
+            string argumentList = string.Join(", ",
+                                              Arguments
+                                                  .TakeWhile(a => a != null)
+                                                  .Select(a => a.ToString()));
 
             return $"{Name}({argumentList})";
         }
@@ -178,24 +178,23 @@
         public double Value { get; }
 
         protected override string Serialize()
-            => Value.ToString(CultureInfo.InvariantCulture);
+            => Value.ToString(provider: CultureInfo.InvariantCulture);
     }
 
     public class BrunoMinus : BrunoExpression, IBrunoOperator
     {
         public BrunoMinus(BrunoExpression left, BrunoExpression right)
         {
-            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(left);
+            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(body: left);
 
-            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(right);
+            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(body: right);
 
             Left  = left;
             Right = right;
-            Children = new[]
-                       {
-                           left,
-                           right
-                       };
+            Children = new[] {
+                                 left,
+                                 right
+                             };
         }
 
         public BrunoExpression Left { get; }
@@ -212,17 +211,16 @@
     {
         public BrunoPlus(BrunoExpression left, BrunoExpression right)
         {
-            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(left);
+            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(body: left);
 
-            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(right);
+            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(body: right);
 
             Left  = left;
             Right = right;
-            Children = new[]
-                       {
-                           left,
-                           right
-                       };
+            Children = new[] {
+                                 left,
+                                 right
+                             };
         }
 
         public BrunoExpression Left { get; }
@@ -239,17 +237,16 @@
     {
         public BrunoAssign(BrunoExpression left, BrunoExpression right)
         {
-            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(left);
+            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(body: left);
 
-            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(right);
+            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(body: right);
 
             Left  = left;
             Right = right;
-            Children = new[]
-                       {
-                           left,
-                           right
-                       };
+            Children = new[] {
+                                 left,
+                                 right
+                             };
         }
 
         public BrunoExpression Left { get; }
@@ -266,17 +263,16 @@
     {
         public BrunoMultiply(BrunoExpression left, BrunoExpression right)
         {
-            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(left);
+            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(body: left);
 
-            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(right);
+            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(body: right);
 
             Left  = left;
             Right = right;
-            Children = new[]
-                       {
-                           left,
-                           right
-                       };
+            Children = new[] {
+                                 left,
+                                 right
+                             };
         }
 
         public BrunoExpression Left { get; }
@@ -293,17 +289,16 @@
     {
         public BrunoDivide(BrunoExpression left, BrunoExpression right)
         {
-            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(left);
+            if (left is IBrunoOperator ileft && ileft.Precedence < Precedence) left = Parenthesis(body: left);
 
-            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(right);
+            if (right is IBrunoOperator iright && iright.Precedence < Precedence) right = Parenthesis(body: right);
 
             Left  = left;
             Right = right;
-            Children = new[]
-                       {
-                           left,
-                           right
-                       };
+            Children = new[] {
+                                 left,
+                                 right
+                             };
         }
 
         public BrunoExpression Left { get; }
@@ -327,7 +322,7 @@
         public string Value { get; }
 
         protected override string Serialize()
-            => EscapeStringLiteral(Value);
+            => EscapeStringLiteral(str: Value);
     }
 
     public class BrunoVariable : BrunoExpression
