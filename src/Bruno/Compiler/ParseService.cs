@@ -3,7 +3,7 @@ namespace Bruno.Compiler
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using Bruno.Ast;
+    using Bruno.Compiler.Ast;
     using Bruno.Compiler.Constants;
     using static Ast.BrunoExpressionHelper;
     using static Constants.Punctuation;

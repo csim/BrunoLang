@@ -1,7 +1,7 @@
 namespace Bruno.Tests
 {
-    using Bruno.Ast;
     using Bruno.Compiler;
+    using Bruno.Compiler.Ast;
     using Xunit;
     using Xunit.Abstractions;
 

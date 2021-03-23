@@ -1,4 +1,4 @@
-﻿namespace Bruno.Ast
+﻿namespace Bruno.Compiler.Ast
 {
     using System.Collections.Generic;
     using System.Text.RegularExpressions;

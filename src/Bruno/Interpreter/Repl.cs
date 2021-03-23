@@ -1,8 +1,8 @@
 ﻿namespace Bruno.Interpreter
 {
     using System;
-    using Bruno.Ast;
     using Bruno.Compiler;
+    using Bruno.Compiler.Ast;
     using Bruno.Exceptions;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;

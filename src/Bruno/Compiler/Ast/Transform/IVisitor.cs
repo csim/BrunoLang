@@ -1,4 +1,4 @@
-﻿namespace Bruno.Ast
+﻿namespace Bruno.Compiler.Ast.Transform
 {
     using System.Linq;
     using Bruno.Exceptions;
@@ -36,6 +36,7 @@
                    BrunoParenthesis iexpr => Parenthesis(iexpr.Body.Accept(visitor: visitor)),
                    BrunoPlus iexpr        => Plus(iexpr.Left.Accept(visitor: visitor), iexpr.Right.Accept(visitor: visitor)),
                    BrunoAccessor iexpr    => iexpr,
+                   BrunoAssign iexpr      => Assign(iexpr.Left.Accept(visitor: visitor), iexpr.Right.Accept(visitor: visitor)),
                    BrunoString iexpr      => iexpr,
                    BrunoVariable iexpr    => iexpr,
                    BrunoNumber iexpr      => iexpr,

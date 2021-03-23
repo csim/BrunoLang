@@ -2,8 +2,8 @@
 {
     using System;
     using System.IO;
-    using Bruno.Ast;
     using Bruno.Compiler;
+    using Bruno.Compiler.Ast;
     using Bruno.Interpreter;
     using CommandLine;
 

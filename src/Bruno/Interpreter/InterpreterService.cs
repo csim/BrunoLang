@@ -5,7 +5,8 @@
     using System.Globalization;
     using System.Linq;
     using System.Text.RegularExpressions;
-    using Bruno.Ast;
+    using Bruno.Compiler.Ast;
+    using Bruno.Compiler.Ast.Transform;
     using Bruno.Exceptions;
 
     /// <summary>
