@@ -142,7 +142,7 @@ namespace Bruno.Compiler
             return token.Type switch {
                        LexTokenType.StringLiteral => StringLiteral(token.Value.ToString()),
                        LexTokenType.DoubleLiteral => DoubleLiteral((double)token.Value),
-                       _                          => throw new Exception($"Unexpected token: {token} {_input.Location}")
+                       var _                      => throw new Exception($"Unexpected token: {token} {_input.Location}")
                    };
         }
 
@@ -165,7 +165,7 @@ namespace Bruno.Compiler
                        Operators.Minus        => Minus(left: left, right: right),
                        Operators.Asterisk     => Multiply(left: left, right: right),
                        Operators.ForwardSlash => Divide(left: left, right: right),
-                       _                      => throw new Exception($"Unknown operator ({op})")
+                       var _                  => throw new Exception($"Unknown operator ({op})")
                    };
         }
 

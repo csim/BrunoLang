@@ -56,6 +56,7 @@
         private class Options
         {
             [Option('i', "interactive", Required = false, HelpText = "Run interactive command prompt.")]
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public bool Interactive { get; set; }
         }
     }
