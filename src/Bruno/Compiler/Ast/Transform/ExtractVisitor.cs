@@ -16,11 +16,11 @@
             _predicate  = extractAction ?? throw new ArgumentNullException(nameof(extractAction));
         }
 
-        private int _depth = 1;
-        private readonly BrunoExpression _expression;
-        private BrunoExpression _parent;
+        private          int                         _depth = 1;
+        private readonly BrunoExpression             _expression;
+        private          BrunoExpression             _parent;
         private readonly Func<BrunoExpression, bool> _predicate;
-        private readonly IList<BrunoExtractResult> _results = new List<BrunoExtractResult>();
+        private readonly IList<BrunoExtractResult>   _results = new List<BrunoExtractResult>();
 
         public void Visit(BrunoExpression node)
         {

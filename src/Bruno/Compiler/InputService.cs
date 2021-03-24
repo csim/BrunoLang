@@ -14,7 +14,7 @@
         }
 
         private readonly char[] _input;
-        private int _position;
+        private          int    _position;
 
         public string Location => $"[{Line}, {Column}]";
 

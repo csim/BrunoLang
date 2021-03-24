@@ -9,8 +9,8 @@
 
     public class Repl
     {
-        private string _command;
-        private JObject _context;
+        private string        _command;
+        private JObject       _context;
         private OutputService _output;
 
         public void Run()

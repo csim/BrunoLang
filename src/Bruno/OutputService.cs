@@ -11,9 +11,9 @@
             _txtEnabled     = txtEnabled;
         }
 
-        private readonly bool _consoleEnabled;
-        private readonly bool _txtEnabled;
-        private StreamWriter _txtWriter;
+        private readonly bool         _consoleEnabled;
+        private readonly bool         _txtEnabled;
+        private          StreamWriter _txtWriter;
 
         public void Dispose()
         {

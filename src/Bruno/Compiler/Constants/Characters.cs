@@ -3,6 +3,6 @@
     public static class Characters
     {
         public const char Backslash = '\\';
-        public const char HashSign = '#';
+        public const char HashSign  = '#';
     }
 }

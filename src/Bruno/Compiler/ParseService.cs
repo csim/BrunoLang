@@ -19,7 +19,7 @@ namespace Bruno.Compiler
         }
 
         private readonly InputService _input;
-        private readonly LexService _lexer;
+        private readonly LexService   _lexer;
         private readonly IDictionary<string, int> _precedence = new Dictionary<string, int> {
                                                                                                 { "=", 1 },
                                                                                                 { ".", 1 },

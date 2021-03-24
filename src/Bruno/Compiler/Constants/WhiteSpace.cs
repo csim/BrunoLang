@@ -8,7 +8,7 @@
                                                 Space
                                             };
         public const char CarriageReturn = '\r';
-        public const char Space = ' ';
-        public const char Tab = '\t';
+        public const char Space          = ' ';
+        public const char Tab            = '\t';
     }
 }

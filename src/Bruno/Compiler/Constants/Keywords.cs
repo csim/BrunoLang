@@ -6,7 +6,7 @@
                                                   If,
                                                   While
                                               };
-        public const string If = "if";
+        public const string If    = "if";
         public const string While = "while";
     }
 }

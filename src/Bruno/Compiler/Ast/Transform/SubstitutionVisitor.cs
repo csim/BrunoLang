@@ -15,7 +15,7 @@
             _substitutions = substitutions;
         }
 
-        private readonly BrunoExpression _expression;
+        private readonly BrunoExpression                                       _expression;
         private readonly IReadOnlyDictionary<BrunoExpression, BrunoExpression> _substitutions;
 
         public BrunoExpression Visit(BrunoExpression expr)

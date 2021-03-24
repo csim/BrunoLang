@@ -18,7 +18,7 @@
         }
 
         private readonly InputService _input;
-        private LexToken _peekCache;
+        private          LexToken     _peekCache;
 
         public bool IsEnd()
             => Peek() == null;

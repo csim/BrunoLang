@@ -5,9 +5,9 @@ namespace Bruno.Tests
     using Xunit;
     using Xunit.Abstractions;
 
-    public class UnitTest1
+    public class AutoTest
     {
-        public UnitTest1(ITestOutputHelper testOutputHelper)
+        public AutoTest(ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
         }

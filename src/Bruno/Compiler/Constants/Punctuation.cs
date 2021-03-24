@@ -16,14 +16,14 @@
                                                 SemiColon
                                             };
         public const char CloseBracket = '.';
-        public const char CloseParen = ')';
-        public const char Colon = ':';
-        public const char Comma = ',';
-        public const char DoubleQuote = '"';
-        public const char Linefeed = '\n';
-        public const char OpenBracket = '.';
-        public const char OpenParen = '(';
-        public const char Period = '.';
-        public const char SemiColon = ';';
+        public const char CloseParen   = ')';
+        public const char Colon        = ':';
+        public const char Comma        = ',';
+        public const char DoubleQuote  = '"';
+        public const char Linefeed     = '\n';
+        public const char OpenBracket  = '.';
+        public const char OpenParen    = '(';
+        public const char Period       = '.';
+        public const char SemiColon    = ';';
     }
 }
