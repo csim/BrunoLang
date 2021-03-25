@@ -4,5 +4,6 @@
     {
         public const char Backslash = '\\';
         public const char HashSign  = '#';
+        public const char CarrageReturn  = '\r';
     }
 }

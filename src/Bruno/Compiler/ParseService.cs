@@ -10,11 +10,11 @@ namespace Bruno.Compiler
 
     public class ParseService
     {
-        private ParseService([NotNull] string formula)
+        private ParseService([NotNull] string content)
         {
-            if (string.IsNullOrEmpty(formula)) throw new ArgumentException("Value cannot be null or empty.", nameof(formula));
+            if (content == null) throw new ArgumentException("Value cannot be null or empty.", nameof(content));
 
-            _input = new InputService(formula);
+            _input = new InputService(content);
             _lexer = new LexService(_input);
         }
 
@@ -175,9 +175,9 @@ namespace Bruno.Compiler
 
             while (!_lexer.IsEnd())
             {
-                if (IsNextPunctuation(Linefeed))
+                if (IsNextPunctuation(LineFeed))
                 {
-                    SkipPunctuation(Linefeed);
+                    SkipPunctuation(LineFeed);
                 }
 
                 statements.Add(ParseExpression());

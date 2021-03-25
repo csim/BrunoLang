@@ -34,6 +34,13 @@
         public LexToken Peek()
             => _peekCache ??= ReadNext();
 
+        private string FormatNext()
+            => _input.Next() switch {
+                   LineFeed      => "'\\n'",
+                   CarrageReturn => "'\\r'",
+                   { } ch        => $"'{ch}'"
+               };
+
         private static bool IsDigit(char ch)
             => Digits.All.Contains(ch);
 
@@ -89,18 +96,22 @@
 
         private LexToken ReadNext()
         {
+            SkipLine();
             ReadWhile(IsWhitespace);
 
             if (_input.IsEnd()) return null;
 
             SkipComment();
+            SkipLine();
 
-            return ReadDouble()
-                   ?? ReadString()
-                   ?? ReadPunctuation()
-                   ?? ReadIdentifier()
-                   ?? ReadOperator()
-                   ?? throw new Exception($"Unexpected character: {_input.Next()}  {_input.Location}");
+            LexToken token = ReadDouble()
+                             ?? ReadString()
+                             ?? ReadPunctuation()
+                             ?? ReadIdentifier()
+                             ?? ReadOperator()
+                             ?? throw new Exception($"Unexpected character: {FormatNext()}  {_input.Location}");
+
+            return token;
         }
 
         private LexToken ReadOperator()
@@ -114,7 +125,7 @@
             if (!IsNextPunctuation(DoubleQuote)) return null;
 
             StringBuilder ret = new();
-            char          end = DoubleQuote;
+            const char    end = DoubleQuote;
 
             _input.Next();
 
@@ -143,9 +154,12 @@
         {
             if (_input.Peek() != HashSign) return;
 
-            ReadWhile(ch => ch != Linefeed);
+            ReadWhile(ch => ch != LineFeed);
             _input.Next();
         }
+
+        private void SkipLine()
+            => ReadWhile(ch => ch == CarrageReturn || ch == LineFeed);
     }
 
     internal record LexToken(LexTokenType Type, object Value)

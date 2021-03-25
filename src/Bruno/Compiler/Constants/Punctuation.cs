@@ -9,7 +9,7 @@
                                                 Colon,
                                                 Comma,
                                                 DoubleQuote,
-                                                Linefeed,
+                                                LineFeed,
                                                 OpenBracket,
                                                 OpenParen,
                                                 Period,
@@ -20,7 +20,7 @@
         public const char Colon        = ':';
         public const char Comma        = ',';
         public const char DoubleQuote  = '"';
-        public const char Linefeed     = '\n';
+        public const char LineFeed     = '\n';
         public const char OpenBracket  = '.';
         public const char OpenParen    = '(';
         public const char Period       = '.';

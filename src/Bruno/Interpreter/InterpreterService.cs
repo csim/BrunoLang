@@ -160,7 +160,7 @@
                    nameof(BrunoExpressionHelper.RoundDown)     => VisitRoundDown(subject),
                    nameof(BrunoExpressionHelper.DateTimeValue) => VisitDateTimeValue(subject),
                    "print"                                     => VisitPrint(subject),
-                   _                                           => throw new BrunoRuntimeException($"{subject.Name} not implemented.")
+                   _                                           => throw new BrunoRuntimeException($"function not found. ({subject.Name})")
                };
 
         private object VisitLast(BrunoFunc subject)

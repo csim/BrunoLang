@@ -8,9 +8,8 @@
     {
         public InputService([NotNull] string input)
         {
-            if (string.IsNullOrEmpty(input)) throw new ArgumentException("Value cannot be null or empty.", nameof(input));
-
-            _input = input.ToCharArray();
+            _input = input?.ToCharArray() 
+                     ?? throw new ArgumentException("Value cannot be null or empty.", nameof(input));
         }
 
         private readonly char[] _input;
@@ -29,7 +28,7 @@
         {
             char ret = _input[_position++];
 
-            if (ret == Linefeed)
+            if (ret == LineFeed)
             {
                 Line++;
                 Column = 1;
