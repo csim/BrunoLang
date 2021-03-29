@@ -8,14 +8,11 @@ namespace Bruno.Tests
     using Xunit;
     using Xunit.Abstractions;
 
-    public class AutoTest
+    public class AutoTest : TestBase
     {
-        public AutoTest(ITestOutputHelper testOutputHelper)
+        public AutoTest(ITestOutputHelper outputHelper) : base(outputHelper)
         {
-            _testOutputHelper = testOutputHelper;
         }
-
-        private readonly ITestOutputHelper _testOutputHelper;
 
         [Theory]
         [ClassData(typeof(AutoTestGenerator))]
@@ -26,13 +23,9 @@ namespace Bruno.Tests
             Assert.NotNull(program);
 
             WriteLine(info.Filename);
-
             WriteLine(new string('-', info.Filename.Length));
             WriteLine(program.ToString());
         }
-
-        private void WriteLine(string content)
-            => _testOutputHelper.WriteLine(content);
     }
 
     public class AutoTestGenerator : IEnumerable<object[]>
